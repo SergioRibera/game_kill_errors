@@ -1,0 +1,12 @@
+[package]
+name = "wasm_kill_errors"
+version = "0.1.0"
+edition = "2021"
+workspace = "../.."
+
+[dependencies]
+bevy.workspace = true
+game = { path = "../.." }
+yew = { version = "0.20", features = ["csr"] }
+
+web-sys = { version = "0.3.62", features = ["Document", "Window"] }

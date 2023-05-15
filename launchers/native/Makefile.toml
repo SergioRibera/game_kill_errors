@@ -1,0 +1,7 @@
+[tasks.run-native]
+command = "mold"
+args = ["-run", "cargo", "run"]
+
+[tasks.release-native]
+command = "mold"
+args = ["-run", "cargo", "build", "--release"]

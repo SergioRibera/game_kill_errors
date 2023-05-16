@@ -1,6 +1,6 @@
 [tasks.run-web]
 command = "mold"
-args = ["-run", "trunk", "serve", "--open"]
+args = ["-run", "trunk", "serve", "--open", "--features", "inspect"]
 
 [tasks.release-web]
 command = "mold"

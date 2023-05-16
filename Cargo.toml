@@ -18,5 +18,10 @@ lto = true
 [workspace.dependencies]
 bevy = "0.10.1"
 
+[features]
+default = []
+inspect = ["bevy-inspector-egui"]
+
 [dependencies]
 bevy.workspace = true
+bevy-inspector-egui = { version = "0.18.3", optional = true }

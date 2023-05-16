@@ -1,4 +1,6 @@
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*, window::WindowMode};
+#[cfg(feature = "inspect")]
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use ui::UiPlugin;
 
 mod ui;
@@ -17,7 +19,6 @@ pub fn app(fullscreen: bool) -> App {
         primary_window: Some(Window {
             mode,
             title: LAUNCHER_TITLE.to_string(),
-            // canvas: Some("#bevy".to_string()),
             fit_canvas_to_parent: true,
             prevent_default_event_handling: false,
             present_mode: bevy::window::PresentMode::AutoVsync,
@@ -25,9 +26,10 @@ pub fn app(fullscreen: bool) -> App {
             ..default()
         }),
         ..default()
-    }))
-    .add_startup_system(setup_camera)
-    .add_plugin(UiPlugin);
+    }));
+    #[cfg(feature = "inspect")]
+    app.add_plugin(WorldInspectorPlugin::new());
+    app.add_startup_system(setup_camera).add_plugin(UiPlugin);
 
     app
 }

@@ -1,10 +1,13 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, window::PrimaryWindow};
+
+#[derive(Component)]
+struct InteractableText;
 
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(setup_ui);
+        app.add_startup_system(setup_ui).add_system(button_system);
     }
 }
 
@@ -52,6 +55,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
         });
         cmd.spawn(ButtonBundle {
             interaction: Interaction::Clicked,
+            focus_policy: bevy::ui::FocusPolicy::Pass,
             background_color: BackgroundColor(Color::WHITE.with_a(0.)),
             ..default()
         })
@@ -67,34 +71,60 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
                 )
                 .with_alignment(TextAlignment::Center),
                 ..default()
-            });
+            })
+            .insert(InteractableText);
         });
     });
 
-    cmd.spawn(TextBundle {
+    cmd.spawn(NodeBundle {
         style: Style {
             display: Display::Flex,
             position_type: PositionType::Absolute,
             flex_direction: FlexDirection::Column,
             align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            position: UiRect {
-                bottom: Val::Px(50.),
-                left: Val::Percent(50.),
-                right: Val::Percent(50.),
-                ..default()
-            },
+            justify_content: JustifyContent::FlexEnd,
+            size: Size::all(Val::Percent(100.)),
             ..default()
         },
-        text: Text::from_section(
-            "La paciencia es una gran virtud",
-            TextStyle {
-                font: font_regular.clone(),
-                font_size: 32.,
-                color: Color::rgba_u8(52, 52, 52, 45),
-            },
-        )
-        .with_alignment(TextAlignment::Center),
         ..default()
+    })
+    .with_children(|cmd| {
+        cmd.spawn(TextBundle {
+            style: Style {
+                position: UiRect::bottom(Val::Px(50.)),
+                ..default()
+            },
+            text: Text::from_section(
+                "La paciencia es una gran virtud",
+                TextStyle {
+                    font: font_regular.clone(),
+                    font_size: 32.,
+                    color: Color::rgba_u8(52, 52, 52, 45),
+                },
+            )
+            .with_alignment(TextAlignment::Center),
+            ..default()
+        });
     });
+}
+
+fn button_system(
+    mut window: Query<&mut Window, With<PrimaryWindow>>,
+    mut interaction_query: Query<(&Interaction, &Children), (Changed<Interaction>, With<Button>)>,
+    mut text: Query<&mut Text, With<InteractableText>>,
+) {
+    let mut window = window.single_mut();
+    let mut text = text.single_mut();
+    for (interaction, _children) in &mut interaction_query {
+        match *interaction {
+            Interaction::Clicked | Interaction::Hovered => {
+                window.cursor.icon = CursorIcon::Hand;
+                text.sections[0].value = "Hover or Clicked".to_string();
+            }
+            Interaction::None => {
+                window.cursor.icon = CursorIcon::Default;
+                text.sections[0].value = "None interaction".to_string();
+            }
+        }
+    }
 }

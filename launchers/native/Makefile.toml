@@ -1,6 +1,14 @@
 [tasks.run-native]
 command = "mold"
 args = ["-run", "cargo", "run", "--features", "inspect"]
+watch.watch = [
+    "../../src",
+    "../../assets",
+    "../../Cargo.toml",
+    "assets",
+    "src",
+    "Cargo.toml",
+]
 
 [tasks.release-native]
 command = "mold"

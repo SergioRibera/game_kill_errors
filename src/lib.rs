@@ -1,4 +1,7 @@
-use bevy::{prelude::*, window::WindowMode};
+use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*, window::WindowMode};
+use ui::UiPlugin;
+
+mod ui;
 
 pub const LAUNCHER_TITLE: &str = "Kill Errors";
 
@@ -14,15 +17,26 @@ pub fn app(fullscreen: bool) -> App {
         primary_window: Some(Window {
             mode,
             title: LAUNCHER_TITLE.to_string(),
-            canvas: Some("#bevy".to_string()),
+            // canvas: Some("#bevy".to_string()),
             fit_canvas_to_parent: true,
+            prevent_default_event_handling: false,
             present_mode: bevy::window::PresentMode::AutoVsync,
             decorations: false,
             ..default()
         }),
         ..default()
-    }));
+    }))
+    .add_startup_system(setup_camera)
+    .add_plugin(UiPlugin);
 
     app
 }
 
+fn setup_camera(mut cmd: Commands) {
+    cmd.spawn(Camera2dBundle {
+        camera_2d: Camera2d {
+            clear_color: ClearColorConfig::Custom(Color::rgb_u8(227, 227, 227)),
+        },
+        ..default()
+    });
+}

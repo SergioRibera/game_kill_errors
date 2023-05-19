@@ -1,8 +1,14 @@
 [env]
-CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = "true"
+CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
+CARGO_MAKE_WORKSPACE_EMULATION = true
+CARGO_MAKE_CRATE_WORKSPACE_MEMBERS = ["launchers/native", "launchers/wasm"]
 
 [config]
 default_to_workspace = true
+skip_core_tasks = true
+skip_git_env_info = true
+skip_rust_env_info = true
+skip_crate_env_info = true
 
 [tasks.default]
 alias = "check"
@@ -70,5 +76,4 @@ dependencies = [
 ]
 
 [tasks.dev]
-alias = "run-native"
-
+run_task.name = "run-native"

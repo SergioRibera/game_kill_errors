@@ -20,9 +20,7 @@ fn view() -> Html {
     set_window_title(LAUNCHER_TITLE);
 
     html! {
-        <div class="content">
-            <canvas id="bevy"></canvas>
-        </div>
+        <> </>
     }
 }
 

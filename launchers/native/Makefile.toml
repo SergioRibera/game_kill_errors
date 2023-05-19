@@ -1,4 +1,5 @@
 [tasks.run-native]
+env_files = ["../../.env"]
 command = "mold"
 args = ["-run", "cargo", "run", "--features", "inspect"]
 watch.watch = [
@@ -11,5 +12,6 @@ watch.watch = [
 ]
 
 [tasks.release-native]
+env_files = ["../../.env"]
 command = "mold"
 args = ["-run", "cargo", "build", "--release"]

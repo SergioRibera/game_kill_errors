@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use bevy::{prelude::*, window::PrimaryWindow};
-use bevy_tweening::{Animator, Delay, EaseFunction, Tween};
+use bevy_tweening::{Animator, Delay, EaseFunction, Tween, TweenCompleted};
 
 use crate::{
     lens::{GameTextColorLens, InstanceLens},
@@ -16,7 +16,7 @@ pub struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(setup_ui)
-            .add_systems((button_system, remove_screen));
+            .add_systems((button_system, remove_screen.run_if(run_if_anim)));
     }
 }
 
@@ -178,4 +178,15 @@ fn button_system(
     }
 }
 
-fn remove_screen() {}
+fn run_if_anim(
+    mut anim_reader: EventReader<TweenCompleted>,
+    texts: Query<Entity, (With<Node>, With<RemovableUI>)>,
+) -> bool {
+    !anim_reader.is_empty() && !texts.is_empty()
+}
+
+fn remove_screen(mut cmd: Commands, texts: Query<Entity, (With<Node>, With<RemovableUI>)>) {
+    for text in texts.iter() {
+        cmd.entity(text).despawn_recursive();
+    }
+}

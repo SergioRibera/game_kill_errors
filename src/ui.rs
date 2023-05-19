@@ -191,7 +191,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
                 ..default()
             },
             Animator::new(
-                Delay::new(Duration::from_secs(*TIME_WAIT_TO_START + 2)).then(
+                Delay::new(Duration::from_secs(*TIME_WAIT_TO_START + 3)).then(
                     Tween::new(
                         EaseFunction::QuadraticInOut,
                         Duration::from_secs(5),

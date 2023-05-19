@@ -6,6 +6,7 @@ use lazy_static::lazy_static;
 
 use ui::UiPlugin;
 
+mod game;
 mod lens;
 mod ui;
 

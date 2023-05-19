@@ -15,7 +15,8 @@ pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(setup_ui).add_system(button_system);
+        app.add_startup_system(setup_ui)
+            .add_systems((button_system, remove_screen));
     }
 }
 

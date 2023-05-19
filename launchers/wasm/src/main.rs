@@ -1,6 +1,6 @@
 use bevy::prelude::*;
-use yew::prelude::*;
 use game::LAUNCHER_TITLE;
+use yew::prelude::*;
 
 fn open_url(url: &str) {
     let window = web_sys::window().unwrap();
@@ -33,4 +33,3 @@ fn main() {
     info!("Starting launcher: WASM");
     game::app(false, open_url).run();
 }
-

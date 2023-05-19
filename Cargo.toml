@@ -25,3 +25,10 @@ inspect = ["bevy-inspector-egui"]
 [dependencies]
 bevy.workspace = true
 bevy-inspector-egui = { version = "0.18.3", optional = true }
+bevy_tweening = { version = "0.7.0", default-features = false, features = [
+    "bevy_text",
+] }
+lazy_static = "1.4.0"
+
+[patch.crates-io]
+bevy_tweening = { git = "https://github.com/sibsibsib/bevy_tweening", branch = "mirrored_repeat_fix" }

@@ -11,3 +11,4 @@ inspect = ["game/inspect"]
 [dependencies]
 bevy.workspace = true
 game = { path = "../.." }
+open = "4.1.0"

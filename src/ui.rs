@@ -1,7 +1,15 @@
+use std::time::Duration;
+
 use bevy::{prelude::*, window::PrimaryWindow};
+use bevy_tweening::{Animator, Delay, EaseFunction, Tween};
+
+use crate::{
+    lens::{GameTextColorLens, InstanceLens},
+    OpenLinkResource, HOME_URL, TIME_WAIT_TO_START,
+};
 
 #[derive(Component)]
-struct InteractableText;
+struct RemovableUI;
 
 pub struct UiPlugin;
 
@@ -28,51 +36,78 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
         },
         ..default()
     })
+    .insert(RemovableUI)
     .with_children(|cmd| {
-        cmd.spawn(TextBundle {
-            text: Text::from_section(
-                "404",
-                TextStyle {
-                    font: font_regular.clone(),
-                    font_size: 128.,
-                    color: Color::rgba_u8(52, 52, 52, 255),
-                },
-            )
-            .with_alignment(TextAlignment::Center),
-            ..default()
-        });
-        cmd.spawn(TextBundle {
-            text: Text::from_section(
-                "Al parecer no encontramos lo que buscas",
-                TextStyle {
-                    font: font_light.clone(),
-                    font_size: 32.,
-                    color: Color::rgba_u8(52, 52, 52, 255),
-                },
-            )
-            .with_alignment(TextAlignment::Center),
-            ..default()
-        });
+        cmd.spawn((
+            TextBundle {
+                text: Text::from_sections([
+                    TextSection::new(
+                        "404\n",
+                        TextStyle {
+                            font: font_regular.clone(),
+                            font_size: 128.,
+                            color: Color::rgba_u8(52, 52, 52, 255),
+                        },
+                    ),
+                    TextSection::new(
+                        "Al parecer no encontramos lo que buscas",
+                        TextStyle {
+                            font: font_light.clone(),
+                            font_size: 32.,
+                            color: Color::rgba_u8(52, 52, 52, 255),
+                        },
+                    ),
+                ])
+                .with_alignment(TextAlignment::Center),
+                ..default()
+            },
+            Animator::new(
+                Delay::new(Duration::from_secs(*TIME_WAIT_TO_START)).then(
+                    Tween::new(
+                        EaseFunction::QuadraticInOut,
+                        Duration::from_secs(5),
+                        GameTextColorLens::create(
+                            Color::rgba_u8(52, 52, 52, 255),
+                            Color::rgba_u8(52, 52, 52, 0),
+                        ),
+                    )
+                    .with_completed_event(1),
+                ),
+            ),
+        ));
+
         cmd.spawn(ButtonBundle {
-            interaction: Interaction::Clicked,
-            focus_policy: bevy::ui::FocusPolicy::Pass,
             background_color: BackgroundColor(Color::WHITE.with_a(0.)),
             ..default()
         })
         .with_children(|cmd| {
-            cmd.spawn(TextBundle {
-                text: Text::from_section(
-                    "Volver al Inicio",
-                    TextStyle {
-                        font: font_light.clone(),
-                        font_size: 32.,
-                        color: Color::rgba_u8(0, 133, 255, 255),
-                    },
-                )
-                .with_alignment(TextAlignment::Center),
-                ..default()
-            })
-            .insert(InteractableText);
+            cmd.spawn((
+                TextBundle {
+                    text: Text::from_section(
+                        "Volver al Inicio",
+                        TextStyle {
+                            font: font_light.clone(),
+                            font_size: 32.,
+                            color: Color::rgba_u8(0, 133, 255, 255),
+                        },
+                    )
+                    .with_alignment(TextAlignment::Center),
+                    ..default()
+                },
+                Animator::new(
+                    Delay::new(Duration::from_secs(*TIME_WAIT_TO_START)).then(
+                        Tween::new(
+                            EaseFunction::QuadraticInOut,
+                            Duration::from_secs(5),
+                            GameTextColorLens::create(
+                                Color::rgba_u8(0, 133, 255, 255),
+                                Color::rgba_u8(0, 133, 255, 0),
+                            ),
+                        )
+                        .with_completed_event(1),
+                    ),
+                ),
+            ));
         });
     });
 
@@ -88,43 +123,58 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
         },
         ..default()
     })
+    .insert(RemovableUI)
     .with_children(|cmd| {
-        cmd.spawn(TextBundle {
-            style: Style {
-                position: UiRect::bottom(Val::Px(50.)),
+        cmd.spawn((
+            TextBundle {
+                style: Style {
+                    position: UiRect::bottom(Val::Px(50.)),
+                    ..default()
+                },
+                text: Text::from_section(
+                    "La paciencia es una gran virtud",
+                    TextStyle {
+                        font: font_regular.clone(),
+                        font_size: 32.,
+                        color: Color::rgba_u8(52, 52, 52, 45),
+                    },
+                )
+                .with_alignment(TextAlignment::Center),
                 ..default()
             },
-            text: Text::from_section(
-                "La paciencia es una gran virtud",
-                TextStyle {
-                    font: font_regular.clone(),
-                    font_size: 32.,
-                    color: Color::rgba_u8(52, 52, 52, 45),
-                },
-            )
-            .with_alignment(TextAlignment::Center),
-            ..default()
-        });
+            Animator::new(
+                Delay::new(Duration::from_secs(*TIME_WAIT_TO_START)).then(
+                    Tween::new(
+                        EaseFunction::QuadraticInOut,
+                        Duration::from_secs(5),
+                        GameTextColorLens::create(
+                            Color::rgba_u8(52, 52, 52, 45),
+                            Color::rgba_u8(52, 52, 52, 0),
+                        ),
+                    )
+                    .with_completed_event(1),
+                ),
+            ),
+        ));
     });
 }
 
 fn button_system(
     mut window: Query<&mut Window, With<PrimaryWindow>>,
     mut interaction_query: Query<(&Interaction, &Children), (Changed<Interaction>, With<Button>)>,
-    mut text: Query<&mut Text, With<InteractableText>>,
+    url_callback: Res<OpenLinkResource>,
 ) {
     let mut window = window.single_mut();
-    let mut text = text.single_mut();
     for (interaction, _children) in &mut interaction_query {
         match *interaction {
-            Interaction::Clicked | Interaction::Hovered => {
+            Interaction::Clicked => {
                 window.cursor.icon = CursorIcon::Hand;
-                text.sections[0].value = "Hover or Clicked".to_string();
+                url_callback.0(HOME_URL);
             }
-            Interaction::None => {
-                window.cursor.icon = CursorIcon::Default;
-                text.sections[0].value = "None interaction".to_string();
-            }
+            Interaction::Hovered => window.cursor.icon = CursorIcon::Hand,
+            Interaction::None => window.cursor.icon = CursorIcon::Default,
         }
     }
 }
+
+fn remove_screen() {}

@@ -24,6 +24,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
     let font_regular = asset_serve.load("fonts/Lato-Regular.ttf");
     let font_light = asset_serve.load("fonts/Lato-Light.ttf");
 
+    // 404 text
     cmd.spawn(NodeBundle {
         style: Style {
             display: Display::Flex,
@@ -77,6 +78,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
             ),
         ));
 
+        // Come back to Home button
         cmd.spawn(ButtonBundle {
             background_color: BackgroundColor(Color::WHITE.with_a(0.)),
             ..default()
@@ -112,6 +114,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
         });
     });
 
+    // Transparent warning message
     cmd.spawn(NodeBundle {
         style: Style {
             display: Display::Flex,
@@ -151,6 +154,50 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
                         GameTextColorLens::create(
                             Color::rgba_u8(52, 52, 52, 45),
                             Color::rgba_u8(52, 52, 52, 0),
+                        ),
+                    )
+                    .with_completed_event(1),
+                ),
+            ),
+        ));
+    });
+
+    // Score Text
+    cmd.spawn(NodeBundle {
+        style: Style {
+            display: Display::Flex,
+            position_type: PositionType::Absolute,
+            flex_direction: FlexDirection::Column,
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::Center,
+            position: UiRect::all(Val::Percent(50.)),
+            gap: Size::height(Val::Px(10.)),
+            ..default()
+        },
+        ..default()
+    })
+    .with_children(|cmd| {
+        cmd.spawn((
+            TextBundle {
+                text: Text::from_section(
+                    "0",
+                    TextStyle {
+                        font: font_regular.clone(),
+                        font_size: 128.,
+                        color: Color::rgba_u8(52, 52, 52, 0),
+                    },
+                )
+                .with_alignment(TextAlignment::Center),
+                ..default()
+            },
+            Animator::new(
+                Delay::new(Duration::from_secs(*TIME_WAIT_TO_START + 2)).then(
+                    Tween::new(
+                        EaseFunction::QuadraticInOut,
+                        Duration::from_secs(5),
+                        GameTextColorLens::create(
+                            Color::rgba_u8(52, 52, 52, 0),
+                            Color::rgba_u8(52, 52, 52, 255),
                         ),
                     )
                     .with_completed_event(1),

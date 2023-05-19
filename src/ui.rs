@@ -226,7 +226,7 @@ fn button_system(
 }
 
 fn run_if_anim(
-    mut anim_reader: EventReader<TweenCompleted>,
+    anim_reader: EventReader<TweenCompleted>,
     texts: Query<Entity, (With<Node>, With<RemovableUI>)>,
 ) -> bool {
     !anim_reader.is_empty() && !texts.is_empty()

@@ -10,6 +10,7 @@ use ui::UiPlugin;
 
 mod ext;
 mod game;
+mod helper;
 mod lens;
 mod ui;
 

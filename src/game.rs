@@ -1,11 +1,11 @@
 use std::time::Duration;
 
-use bevy::{math::vec3, prelude::*};
+use bevy::prelude::*;
 use bevy_mod_picking::prelude::*;
 use bevy_tweening::TweenCompleted;
 use rand::prelude::*;
 
-use crate::{ext::Vec3ExtMut, GameState, MAX_BUGS_ON_SCREEN};
+use crate::{ext::Vec3ExtMut, GameState, MAX_BUGS_ON_SCREEN, helper::generate_points};
 
 //
 // Score Data Management
@@ -85,46 +85,7 @@ fn factory_bugs(
         return;
     }
     let mut rnd = thread_rng();
-    let mut points = Vec::new();
-
-    // start point out of screen
-    points.push(vec3(
-        if rnd.gen_bool(0.5) {
-            rnd.gen_range(-25.0..=-20.)
-        } else {
-            rnd.gen_range(20.0..=25.)
-        },
-        if rnd.gen_bool(0.5) {
-            rnd.gen_range(-20.0..=-12.)
-        } else {
-            rnd.gen_range(12.0..=20.)
-        },
-        0.,
-    ));
-
-    for _ in 0..7 {
-        points.push(vec3(
-            rnd.gen_range(-20.0..=20.),
-            rnd.gen_range(-12.0..=12.),
-            0.,
-        ));
-    }
-
-    // end point out of screen
-    points.push(vec3(
-        if rnd.gen_bool(0.5) {
-            rnd.gen_range(-25.0..=-20.)
-        } else {
-            rnd.gen_range(20.0..=25.)
-        },
-        if rnd.gen_bool(0.5) {
-            rnd.gen_range(-20.0..=-12.)
-        } else {
-            rnd.gen_range(12.0..=20.)
-        },
-        0.,
-    ));
-
+    let points = generate_points(rnd);
     // Spawning a cube to experiment on
     cmd.spawn((
         PbrBundle {
@@ -140,7 +101,7 @@ fn factory_bugs(
         BugPathWalk {
             points,
             current_path: 0,
-            speed: rnd.gen_range(5.0..=7.),
+            speed: 2.5,
         },
     ));
 

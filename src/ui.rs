@@ -4,6 +4,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use bevy_tweening::{Animator, Delay, EaseFunction, Tween, TweenCompleted};
 
 use crate::{
+    game::ScoreText,
     lens::{GameTextColorLens, InstanceLens},
     OpenLinkResource, HOME_URL, TIME_WAIT_TO_START,
 };
@@ -20,7 +21,10 @@ impl Plugin for UiPlugin {
     }
 }
 
-fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
+fn setup_ui(
+    mut cmd: Commands,
+    asset_serve: Res<AssetServer>,
+) {
     let font_regular = asset_serve.load("fonts/Lato-Regular.ttf");
     let font_light = asset_serve.load("fonts/Lato-Light.ttf");
 
@@ -182,7 +186,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
                 text: Text::from_section(
                     "0",
                     TextStyle {
-                        font: font_regular.clone(),
+                        font: font_light.clone(),
                         font_size: 128.,
                         color: Color::rgba_u8(52, 52, 52, 0),
                     },
@@ -190,6 +194,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
                 .with_alignment(TextAlignment::Center),
                 ..default()
             },
+            ScoreText(0),
             Animator::new(
                 Delay::new(Duration::from_secs(*TIME_WAIT_TO_START + 3)).then(
                     Tween::new(
@@ -200,7 +205,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
                             Color::rgba_u8(52, 52, 52, 255),
                         ),
                     )
-                    .with_completed_event(1),
+                    .with_completed_event(2)
                 ),
             ),
         ));

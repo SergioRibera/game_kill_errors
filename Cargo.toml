@@ -20,15 +20,21 @@ bevy = "0.10.1"
 
 [features]
 default = []
-inspect = ["bevy-inspector-egui"]
+inspect = ["bevy/bevy_dylib", "bevy-inspector-egui", "bevy_mod_picking/debug"]
 
 [dependencies]
 bevy.workspace = true
+rand = "0.8"
+lazy_static = "1.4.0"
 bevy-inspector-egui = { version = "0.18.3", optional = true }
+bevy_mod_picking = { version = "0.13.0", default-features = false, features = [
+    "selection",
+    "backend_raycast",
+    # "backend_egui",
+] }
 bevy_tweening = { version = "0.7.0", default-features = false, features = [
     "bevy_text",
 ] }
-lazy_static = "1.4.0"
 
 [patch.crates-io]
 bevy_tweening = { git = "https://github.com/sibsibsib/bevy_tweening", branch = "mirrored_repeat_fix" }

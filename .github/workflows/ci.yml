@@ -10,9 +10,6 @@ jobs:
       - uses: dsherret/rust-toolchain-file@v1
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
-        with:
-          mode: release
-          path: ./.env
       - name: Install dependencies
         run: |
           export DEBIAN_FRONTED=noninteractive

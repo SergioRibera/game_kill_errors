@@ -5,13 +5,22 @@ use bevy_mod_picking::prelude::*;
 use bevy_tweening::TweenCompleted;
 use rand::prelude::*;
 
-use crate::{ext::Vec3ExtMut, GameState, MAX_BUGS_ON_SCREEN, helper::generate_points};
+use crate::{
+    effects::EffectTypeEvent, ext::Vec3ExtMut, helper::generate_points, GameState,
+    MAX_BUGS_ON_SCREEN,
+};
 
 //
 // Score Data Management
 //
+#[derive(Resource)]
+pub(crate) struct ScoreTextResource(pub u64);
+
+//
+// Score Text Identifier
+//
 #[derive(Component)]
-pub(crate) struct ScoreText(pub u64);
+pub(crate) struct ScoreText;
 
 //
 // Patrol Data for bugs
@@ -30,8 +39,24 @@ struct BugPathWalk {
 #[derive(Component, Default, Reflect)]
 #[reflect]
 struct BugData {
-    killed: bool,
+    clicks: u8,
+    max_clicks: u8,
     wait_for_remove: Timer, // when is dead, this tick for despawn entity
+}
+
+impl BugData {
+    pub fn is_dead(&self) -> bool {
+        self.clicks == self.max_clicks
+    }
+
+    pub fn factory(score: u64) -> Self {
+        let max_clicks = if score == 404 { 2 } else { 1 };
+        Self {
+            clicks: 0,
+            max_clicks,
+            wait_for_remove: Timer::new(Duration::from_secs(3), TimerMode::Once),
+        }
+    }
 }
 
 #[derive(Resource)]
@@ -60,6 +85,7 @@ impl Plugin for Game {
         app.insert_resource(BugsSpawnTimer {
             timer: Timer::from_seconds(2., TimerMode::Once),
         })
+        .insert_resource(ScoreTextResource(0))
         .register_type::<BugPathWalk>()
         .register_type::<BugData>()
         .add_event::<BugEntityClickedEvent>()
@@ -79,6 +105,7 @@ fn factory_bugs(
     bugs: Query<Entity, With<BugData>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    score: Res<ScoreTextResource>,
 ) {
     if !spawn_data.timer.tick(time.delta()).finished() || bugs.iter().count() >= *MAX_BUGS_ON_SCREEN
     {
@@ -97,7 +124,7 @@ fn factory_bugs(
         PickableBundle::default(),
         RaycastPickTarget::default(),
         OnPointer::<Click>::send_event::<BugEntityClickedEvent>(),
-        BugData::default(),
+        BugData::factory(score.0),
         BugPathWalk {
             points,
             current_path: 0,
@@ -118,7 +145,7 @@ fn movement_bugs(
     mut bugs: Query<(Entity, &BugData, &mut Transform, &mut BugPathWalk)>,
 ) {
     for (entity, data, mut transform, mut path) in bugs.iter_mut() {
-        if data.killed {
+        if data.is_dead() {
             continue;
         }
         if let Some(next) = path.points.get(path.current_path + 1) {
@@ -136,41 +163,46 @@ fn kill_detect(
     mut cmd: Commands,
     time: Res<Time>,
     mut bugs: Query<(Entity, &Transform, &mut BugData), With<BugPathWalk>>,
-    mut score: Query<&mut ScoreText, With<Text>>,
+    mut score: ResMut<ScoreTextResource>,
     mut click_event: EventReader<BugEntityClickedEvent>,
+    mut effect: EventWriter<EffectTypeEvent>,
 ) {
-    let mut score = score.single_mut();
-
     for e in click_event.iter() {
-        for (entity, _bug, mut data) in bugs.iter_mut() {
+        for (entity, bug_transform, mut data) in bugs.iter_mut() {
             // if not clicked same entity as iter
             if e.0.index() != entity.index() {
                 continue;
             }
+            let Some(pos) = e.1 else { continue; };
             // if bug is killed
-            if data.killed {
+            if data.is_dead() {
                 // TODO: add clicks to kill
                 // run countdown for remove from scene
                 if data.wait_for_remove.tick(time.delta()).finished() {
                     // TODO: particle desespawn
+                    effect.send(EffectTypeEvent::Click {
+                        pos: bug_transform.translation,
+                    });
                     cmd.entity(entity).despawn_recursive();
                 }
                 continue;
             }
             score.0 += 1;
-            data.killed = true;
+            data.clicks += 1;
             // Spawn particles
+            effect.send(EffectTypeEvent::Click { pos });
         }
     }
 }
 
 fn score_print(
-    mut text: Query<(&mut Text, &ScoreText)>,
+    mut text: Query<&mut Text, With<ScoreText>>,
     mut anim_reader: EventReader<TweenCompleted>,
     mut game_state: ResMut<NextState<GameState>>,
+    score: Res<ScoreTextResource>,
 ) {
-    let (mut text, data) = text.single_mut();
-    text.sections[0].value = data.0.to_string();
+    let mut text = text.single_mut();
+    text.sections[0].value = score.0.to_string();
 
     for e in anim_reader.iter() {
         if e.user_data == 2 {

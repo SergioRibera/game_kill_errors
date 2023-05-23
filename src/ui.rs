@@ -191,7 +191,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
                 .with_alignment(TextAlignment::Center),
                 ..default()
             },
-            ScoreText(0),
+            ScoreText,
             Animator::new(
                 Delay::new(Duration::from_secs(*TIME_WAIT_TO_START + 3)).then(
                     Tween::new(

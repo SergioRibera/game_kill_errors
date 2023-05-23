@@ -20,11 +20,11 @@ pub(crate) const HOME_URL: &str = env!("HOME_URL");
 // Game Enviroment Variables
 lazy_static! {
     pub(crate) static ref TIME_WAIT_TO_START: u64 = {
-        let time = std::env::var("TIME_WAIT_TO_START").unwrap_or(10.to_string());
+        let time = env!("TIME_WAIT_TO_START");
         time.parse::<u64>().unwrap_or(10)
     };
     pub(crate) static ref MAX_BUGS_ON_SCREEN: usize = {
-        let time = std::env::var("MAX_BUGS_ON_SCREEN").unwrap_or(30.to_string());
+        let time = env!("MAX_BUGS_ON_SCREEN");
         time.parse::<usize>().unwrap_or(30)
     };
 }

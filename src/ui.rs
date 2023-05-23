@@ -21,10 +21,7 @@ impl Plugin for UiPlugin {
     }
 }
 
-fn setup_ui(
-    mut cmd: Commands,
-    asset_serve: Res<AssetServer>,
-) {
+fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
     let font_regular = asset_serve.load("fonts/Lato-Regular.ttf");
     let font_light = asset_serve.load("fonts/Lato-Light.ttf");
 
@@ -205,7 +202,7 @@ fn setup_ui(
                             Color::rgba_u8(52, 52, 52, 255),
                         ),
                     )
-                    .with_completed_event(2)
+                    .with_completed_event(2),
                 ),
             ),
         ));

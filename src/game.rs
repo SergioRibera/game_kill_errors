@@ -46,15 +46,18 @@ struct BugData {
 
 impl BugData {
     pub fn is_dead(&self) -> bool {
-        self.clicks == self.max_clicks
+        self.clicks >= self.max_clicks
     }
 
     pub fn factory(score: u64) -> Self {
+        #[cfg(debug_assertions)]
+        let max_clicks = if score == 10 { 2 } else { 1 };
+        #[cfg(not(debug_assertions))]
         let max_clicks = if score == 404 { 2 } else { 1 };
         Self {
             clicks: 0,
             max_clicks,
-            wait_for_remove: Timer::new(Duration::from_secs(3), TimerMode::Once),
+            wait_for_remove: Timer::from_seconds(3., TimerMode::Once),
         }
     }
 }
@@ -112,7 +115,7 @@ fn factory_bugs(
         return;
     }
     let mut rnd = thread_rng();
-    let points = generate_points(rnd);
+    let points = generate_points(rnd.clone());
     // Spawning a cube to experiment on
     cmd.spawn((
         PbrBundle {
@@ -167,30 +170,30 @@ fn kill_detect(
     mut click_event: EventReader<BugEntityClickedEvent>,
     mut effect: EventWriter<EffectTypeEvent>,
 ) {
-    for e in click_event.iter() {
-        for (entity, bug_transform, mut data) in bugs.iter_mut() {
-            // if not clicked same entity as iter
-            if e.0.index() != entity.index() {
-                continue;
+    let clicks = click_event.iter().map(|e| e.0).collect::<Vec<Entity>>();
+    for (entity, bug_transform, mut data) in bugs.iter_mut() {
+        // if bug is killed
+        if data.is_dead() {
+            // run countdown for remove from scene
+            if data.wait_for_remove.tick(time.delta()).finished() {
+                effect.send(EffectTypeEvent::Dead {
+                    pos: bug_transform.translation,
+                });
+                cmd.entity(entity).despawn_recursive();
             }
-            let Some(pos) = e.1 else { continue; };
-            // if bug is killed
-            if data.is_dead() {
-                // TODO: add clicks to kill
-                // run countdown for remove from scene
-                if data.wait_for_remove.tick(time.delta()).finished() {
-                    // TODO: particle desespawn
-                    effect.send(EffectTypeEvent::Click {
-                        pos: bug_transform.translation,
-                    });
-                    cmd.entity(entity).despawn_recursive();
-                }
+            continue;
+        }
+        for e in &clicks {
+            // if not clicked same entity as iter
+            if e.index() != entity.index() {
                 continue;
             }
             score.0 += 1;
             data.clicks += 1;
             // Spawn particles
-            effect.send(EffectTypeEvent::Click { pos });
+            effect.send(EffectTypeEvent::Click {
+                pos: bug_transform.translation,
+            });
         }
     }
 }

@@ -1,13 +1,19 @@
-use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*, window::WindowMode};
+use bevy::{
+    core_pipeline::clear_color::ClearColorConfig, prelude::*, render::camera::ScalingMode,
+    window::WindowMode,
+};
 #[cfg(feature = "inspect")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_mod_picking::{prelude::RaycastPickCamera, DefaultPickingPlugins};
+use bevy_sprite3d::Sprite3dPlugin;
 use bevy_tweening::TweeningPlugin;
+use effects::EffectsPlugin;
 use game::Game;
 use lazy_static::lazy_static;
 
 use ui::UiPlugin;
 
+mod effects;
 mod ext;
 mod game;
 mod helper;
@@ -62,12 +68,14 @@ pub fn app(fullscreen: bool, open_url: fn(&str)) -> App {
             ..default()
         }))
         .add_plugins(DefaultPickingPlugins.build())
+        .add_plugin(Sprite3dPlugin)
         .add_plugin(TweeningPlugin);
     #[cfg(feature = "inspect")]
     app.add_plugin(WorldInspectorPlugin::new());
     app.add_state::<GameState>()
         .add_startup_system(setup_camera)
         .add_plugin(UiPlugin)
+        .add_plugin(EffectsPlugin)
         .add_plugin(Game);
 
     app
@@ -76,6 +84,10 @@ pub fn app(fullscreen: bool, open_url: fn(&str)) -> App {
 fn setup_camera(mut cmd: Commands) {
     cmd.spawn((
         Camera3dBundle {
+            projection: Projection::Orthographic(OrthographicProjection {
+                scaling_mode: ScalingMode::FixedVertical(25.),
+                ..default()
+            }),
             transform: Transform::from_xyz(0., 0., 25.),
             camera_3d: Camera3d {
                 clear_color: ClearColorConfig::Custom(Color::rgb_u8(227, 227, 227)),

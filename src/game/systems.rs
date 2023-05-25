@@ -115,10 +115,7 @@ pub(super) fn kill_detect(
     mut click_event: EventReader<BugEntityClickedEvent>,
     mut effect: EventWriter<EffectTypeEvent>,
 ) {
-    let clicks = click_event
-        .iter()
-        .map(|e| e)
-        .collect::<Vec<&BugEntityClickedEvent>>();
+    let clicks = click_event.iter().collect::<Vec<&BugEntityClickedEvent>>();
 
     for (entity, bug_transform, mut data) in bugs.iter_mut() {
         // if bug is killed

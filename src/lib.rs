@@ -20,11 +20,15 @@ mod helper;
 mod lens;
 mod ui;
 
+//
 // Launcher Game Enviroment Variables
+//
 pub const LAUNCHER_TITLE: &str = "Kill Errors";
 pub(crate) const HOME_URL: &str = env!("HOME_URL");
 
+//
 // Game Enviroment Variables
+//
 lazy_static! {
     pub(crate) static ref TIME_WAIT_TO_START: u64 = {
         let time = env!("TIME_WAIT_TO_START");

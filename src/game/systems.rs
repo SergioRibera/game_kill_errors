@@ -6,7 +6,8 @@ use bevy_tweening::TweenCompleted;
 use rand::{thread_rng, Rng};
 
 use crate::{
-    effects::EffectTypeEvent, ext::Vec3ExtMut, helper::generate_points, GameState, MAX_BUGS_ON_SCREEN,
+    effects::EffectTypeEvent, ext::Vec3ExtMut, helper::generate_points, GameState,
+    MAX_BUGS_ON_SCREEN,
 };
 
 use super::{

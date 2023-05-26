@@ -23,61 +23,46 @@ pub(super) fn factory_bugs(
     mut spawn_data: ResMut<BugsSpawnTimer>,
     bugs: Query<Entity, With<BugData>>,
     score: Res<ScoreTextResource>,
-) -> Result<BugAnimations, ()> {
+) {
     if !spawn_data.timer.tick(time.delta()).finished() || bugs.iter().count() >= *MAX_BUGS_ON_SCREEN
     {
-        return Err(());
+        return;
     }
     let mut rnd = thread_rng();
     let points = generate_points(rnd.clone());
     let (scene, animations) = BugAnimations::factory(score.0, &spawn_data);
     // Spawning a cube to experiment on
-    cmd.spawn((
-        PbrBundle {
-            mesh: spawn_data.cube.clone(),
-            material: spawn_data.material.clone(),
-            transform: Transform::from_translation(points[0]).with_scale(Vec3::splat(1.)),
-            ..default()
-        },
-        PickableBundle::default(),
-        RaycastPickTarget::default(),
-        OnPointer::<Click>::send_event::<BugEntityClickedEvent>(),
-        BugData::factory(score.0, animations.clone()),
-        BugPathWalk {
-            points,
-            current_path: 0,
-            speed: 2.5,
-        },
-    ))
-    .with_children(|parent| {
-        parent.spawn(SceneBundle {
-            scene,
-            transform: Transform::from_translation(Vec3::new(0., -1., 1.)),
-            ..default()
+    cmd
+        .spawn((
+            PbrBundle {
+                mesh: spawn_data.cube.clone(),
+                material: spawn_data.material.clone(),
+                transform: Transform::from_translation(points[0]).with_scale(Vec3::splat(1.)),
+                ..default()
+            },
+            PickableBundle::default(),
+            RaycastPickTarget::default(),
+            OnPointer::<Click>::send_event::<BugEntityClickedEvent>(),
+            BugData::factory(score.0, animations.clone()),
+            BugPathWalk {
+                points,
+                current_path: 0,
+                speed: 2.5,
+            },
+        ))
+        .with_children(|parent| {
+            parent.spawn(SceneBundle {
+                scene,
+                transform: Transform::from_translation(Vec3::new(0., -1., 1.)),
+                ..default()
+            });
         });
-    });
 
     // Change timer and reset
     spawn_data
         .timer
         .set_duration(Duration::from_secs(rnd.gen_range(2u64..=5u64)));
     spawn_data.timer.reset();
-    Ok(animations)
-}
-
-//
-// Pipe from factory of entity
-// Enable first animation (walk)
-//
-pub(super) fn setup_animation(
-    In(animations): In<Result<BugAnimations, ()>>,
-    mut bug_animation: Query<&mut AnimationPlayer>,
-) {
-    if let Ok(animations) = animations {
-        for mut bug in bug_animation.iter_mut() {
-            bug.play(animations.walk.clone_weak()).repeat();
-        }
-    }
 }
 
 //
@@ -86,11 +71,14 @@ pub(super) fn setup_animation(
 pub(super) fn movement_bugs(
     mut cmd: Commands,
     time: Res<Time>,
-    mut bugs: Query<(Entity, &BugData, &mut Transform, &mut BugPathWalk)>,
+    mut bugs: Query<(Entity, &mut BugData, &mut Transform, &mut BugPathWalk)>,
 ) {
-    for (entity, data, mut transform, mut path) in bugs.iter_mut() {
+    for (entity, mut data, mut transform, mut path) in bugs.iter_mut() {
         if data.is_dead() {
             continue;
+        }
+        if data.state == BugState::Idle {
+            data.state = BugState::Walking;
         }
         if let Some(next) = path.points.get(path.current_path + 1) {
             transform.look_at(*next, Vec3::Z);
@@ -103,13 +91,41 @@ pub(super) fn movement_bugs(
     }
 }
 
+pub(super) fn animate_bugs(
+    mut animation_player: Query<&mut AnimationPlayer>,
+    children: Query<&Children>,
+    mut bugs: Query<(Entity, &mut BugData)>,
+) {
+    for (entity, mut data) in bugs.iter_mut() {
+        if data.state == BugState::Idle || data.state == data.last_state {
+            continue;
+        }
+        data.last_state = data.state;
+        for children_entity in children.iter_descendants(entity) {
+            if let Ok(mut anim) = animation_player.get_mut(children_entity) {
+                match data.state {
+                    BugState::Walking => {
+                        anim.play(data.animations.walk.clone_weak()).repeat();
+                    }
+                    BugState::Death => {
+                        anim.stop_repeating().play_with_transition(
+                            data.animations.death.clone_weak(),
+                            Duration::from_millis(250),
+                        );
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+}
+
 //
 // Kill Bug Entity when is clicked or end walk
 //
 pub(super) fn kill_detect(
     mut cmd: Commands,
     time: Res<Time>,
-    mut animation_player: Query<&mut AnimationPlayer>,
     mut bugs: Query<(Entity, &Transform, &mut BugData), With<BugPathWalk>>,
     mut score: ResMut<ScoreTextResource>,
     mut click_event: EventReader<BugEntityClickedEvent>,
@@ -121,13 +137,7 @@ pub(super) fn kill_detect(
         // if bug is killed
         if data.is_dead() {
             // play dead animation
-            if let Ok(mut bug) = animation_player.get_single_mut() {
-                println!("Play Death");
-                bug.play_with_transition(
-                    data.animations.death.clone_weak(),
-                    Duration::from_millis(250),
-                );
-            }
+            data.state = BugState::Death;
             // run countdown for remove from scene
             if data.wait_for_remove.tick(time.delta()).finished() {
                 effect.send(EffectTypeEvent::Dead {

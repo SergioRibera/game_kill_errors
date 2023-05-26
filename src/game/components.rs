@@ -19,6 +19,15 @@ pub(super) struct BugPathWalk {
     pub(super) speed: f32,
 }
 
+#[derive(Clone, Copy, Default, Reflect, PartialEq, Eq)]
+#[reflect]
+pub(super) enum BugState {
+    #[default]
+    Idle,
+    Walking,
+    Death
+}
+
 //
 // Bug Data
 //
@@ -28,6 +37,8 @@ pub(super) struct BugData {
     pub(super) clicks: u8,
     pub(super) max_clicks: u8,
     pub(super) wait_for_remove: Timer, // when is dead, this tick for despawn entity
+    pub(super) last_state: BugState,
+    pub(super) state: BugState,
     #[reflect(ignore)]
     pub(super) animations: BugAnimations,
 }
@@ -43,6 +54,8 @@ impl BugData {
             clicks: 0,
             max_clicks,
             animations,
+            state: BugState::Idle,
+            last_state: BugState::Idle,
             wait_for_remove: Timer::from_seconds(3., TimerMode::Once),
         }
     }

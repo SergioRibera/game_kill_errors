@@ -57,9 +57,8 @@ impl Plugin for Game {
                 },
             )
             .add_systems((
-                factory_bugs
-                    .pipe(setup_animation)
-                    .run_if(in_state(GameState::Game)),
+                factory_bugs.run_if(in_state(GameState::Game)),
+                animate_bugs,
                 movement_bugs,
                 kill_detect,
                 score_print,

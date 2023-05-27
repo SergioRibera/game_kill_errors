@@ -80,7 +80,7 @@ pub(super) fn movement_bugs(
             data.state = BugState::Walking;
         }
         if let Some(next) = path.points.get(path.current_path + 1) {
-            transform.look_at(*next, Vec3::Z);
+            transform.look_at(path.points[path.current_path], Vec3::Z);
             if transform.move_towards(next, path.speed * time.delta_seconds()) {
                 path.current_path += 1;
             }

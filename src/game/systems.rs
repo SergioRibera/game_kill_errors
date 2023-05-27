@@ -32,31 +32,30 @@ pub(super) fn factory_bugs(
     let points = generate_points(rnd.clone());
     let (scene, animations) = BugAnimations::factory(score.0, &spawn_data);
     // Spawning a cube to experiment on
-    cmd
-        .spawn((
-            PbrBundle {
-                mesh: spawn_data.cube.clone(),
-                material: spawn_data.material.clone(),
-                transform: Transform::from_translation(points[0]).with_scale(Vec3::splat(1.)),
-                ..default()
-            },
-            PickableBundle::default(),
-            RaycastPickTarget::default(),
-            OnPointer::<Click>::send_event::<BugEntityClickedEvent>(),
-            BugData::factory(score.0, animations.clone()),
-            BugPathWalk {
-                points,
-                current_path: 0,
-                speed: 2.5,
-            },
-        ))
-        .with_children(|parent| {
-            parent.spawn(SceneBundle {
-                scene,
-                transform: Transform::from_translation(Vec3::new(0., -1., 1.)),
-                ..default()
-            });
+    cmd.spawn((
+        PbrBundle {
+            mesh: spawn_data.cube.clone(),
+            material: spawn_data.material.clone(),
+            transform: Transform::from_translation(points[0]).with_scale(Vec3::splat(1.)),
+            ..default()
+        },
+        PickableBundle::default(),
+        RaycastPickTarget::default(),
+        OnPointer::<Click>::send_event::<BugEntityClickedEvent>(),
+        BugData::factory(score.0, animations.clone()),
+        BugPathWalk {
+            points,
+            current_path: 0,
+            speed: 2.5,
+        },
+    ))
+    .with_children(|parent| {
+        parent.spawn(SceneBundle {
+            scene,
+            transform: Transform::from_translation(Vec3::new(0., -1., 0.5)),
+            ..default()
         });
+    });
 
     // Change timer and reset
     spawn_data

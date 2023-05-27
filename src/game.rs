@@ -17,7 +17,7 @@ pub const CRAB_SCORES: &[u64] = &[10, 11, 12, 13, 14, 15];
 
 // Release Proyect
 #[cfg(not(debug_assertions))]
-pub const CRAB_SCORES: &[u64] = &[404, 405, 406, 407, 408];
+pub const CRAB_SCORES: &[u64] = &[4, 40, 404, 405, 406, 407, 408];
 
 //
 // Game Plugin
@@ -38,10 +38,10 @@ impl Plugin for Game {
                     cmd.insert_resource(BugsSpawnTimer {
                         timer: Timer::from_seconds(2., TimerMode::Once),
                         cube: meshes.add(shape::Box::new(2., 0., 3.).into()),
-                        material: materials.add(Color::WHITE.with_a(0.).into()),
+                        material: materials.add(Color::ORANGE.with_a(0.).into()),
                         models: vec![
                             asset_server.load("animated_3d/spider.glb#Scene0"), //spider
-                            asset_server.load("animated_3d/spider.glb#Scene0"), //crab
+                            asset_server.load("animated_3d/crab.glb#Scene0"), //crab
                         ],
                         animations: vec![
                             // Spider Walk
@@ -49,9 +49,9 @@ impl Plugin for Game {
                             // Spider Death
                             asset_server.load("animated_3d/spider.glb#Animation1"),
                             // Crab Walk
-                            asset_server.load("animated_3d/spider.glb#Animation4"),
+                            asset_server.load("animated_3d/crab.glb#Animation2"),
                             // Crab Death
-                            asset_server.load("animated_3d/spider.glb#Animation1"),
+                            asset_server.load("animated_3d/crab.glb#Animation1"),
                         ],
                     })
                 },
@@ -90,9 +90,9 @@ struct BugAnimations {
 impl BugAnimations {
     pub fn factory(score: u64, asset: &ResMut<BugsSpawnTimer>) -> (Handle<Scene>, Self) {
         let (model, anims) = if CRAB_SCORES.contains(&score) {
-            (asset.models[1].clone_weak(), &asset.animations[0..=1])
+            (asset.models[1].clone_weak(), &asset.animations[2..=3])
         } else {
-            (asset.models[0].clone_weak(), &asset.animations[2..=3])
+            (asset.models[0].clone_weak(), &asset.animations[0..=1])
         };
         (
             model,

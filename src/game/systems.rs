@@ -42,7 +42,7 @@ pub(super) fn factory_bugs(
         PickableBundle::default(),
         RaycastPickTarget::default(),
         OnPointer::<Click>::send_event::<BugEntityClickedEvent>(),
-        BugData::factory(score.0, animations.clone()),
+        BugData::factory(score.0, animations),
         BugPathWalk {
             points,
             current_path: 0,

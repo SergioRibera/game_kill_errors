@@ -25,7 +25,7 @@ pub(super) enum BugState {
     #[default]
     Idle,
     Walking,
-    Death
+    Death,
 }
 
 //

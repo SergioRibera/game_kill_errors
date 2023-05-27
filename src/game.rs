@@ -41,7 +41,7 @@ impl Plugin for Game {
                         material: materials.add(Color::ORANGE.with_a(0.).into()),
                         models: vec![
                             asset_server.load("animated_3d/spider.glb#Scene0"), //spider
-                            asset_server.load("animated_3d/crab.glb#Scene0"), //crab
+                            asset_server.load("animated_3d/crab.glb#Scene0"),   //crab
                         ],
                         animations: vec![
                             // Spider Walk

@@ -49,9 +49,9 @@ impl Plugin for Game {
                             // Spider Death
                             asset_server.load("animated_3d/spider.glb#Animation1"),
                             // Crab Walk
-                            asset_server.load("animated_3d/crab.glb#Animation2"),
-                            // Crab Death
                             asset_server.load("animated_3d/crab.glb#Animation1"),
+                            // Crab Death
+                            asset_server.load("animated_3d/crab.glb#Animation0"),
                         ],
                     })
                 },

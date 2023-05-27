@@ -12,6 +12,7 @@ jobs:
         uses: xom9ikk/dotenv@v2
       - name: Install dependencies
         run: |
+          echo "${{ github.ref_name }}"
           export DEBIAN_FRONTED=noninteractive
           sudo apt-get -qq update
           sudo apt-get install -y libxdo-dev libasound2-dev libudev-dev pkg-config

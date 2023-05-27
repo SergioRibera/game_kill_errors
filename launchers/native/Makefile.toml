@@ -1,7 +1,8 @@
 [tasks.run-native]
 env_files = ["../../.env"]
-command = "mold"
-args = ["-run", "cargo", "run", "--features", "inspect"]
+script_runner = "@shell"
+script.pre = "cp -r ../../assets/* ./assets"
+script.main = "mold -run cargo run --features inspect"
 watch.watch = [
     "../../src",
     "../../assets",

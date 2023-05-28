@@ -1,7 +1,6 @@
 # Kill Errors - 404
 ![Screenshot_20230527_161932](https://github.com/SergioRibera/game_kill_errors/assets/56278796/3b6a9811-d1a1-4783-a052-18a233515971)
 
-</br>
 <p align="center">
 	<img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/SergioRibera/game_kill_errors/ci.yml?label=ci&style=flat-square">
 	<img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/SergioRibera/game_kill_errors/build.yml?label=Build%20Native&style=flat-square">
@@ -29,6 +28,20 @@
 - Edit the `.env` file if you need
 - Run `cargo make dev` for run as development mode (Native window)
 - Run `cargo make --list-all-steps` for check all aviable tasks
+
+#### Other CargoMake Tasks
+
+* **build** - Generate release binary/lib
+* **check** - Check all issues, format and code quality
+* **clean** - Clean all target directory
+* **clippy** - Check code quality
+* **default** - Check all issues, format and code quality
+* **dev** - Run native launcher with development configuration
+* **fix-all** - Try fix all clippy and format issues
+* **fix-clippy** - Fix code quality
+* **fix-fmt** - Fix format
+* **fmt** - Check format quality
+* **test** - Check all unit test
 
 # Usage as Library
 > ⚠️ Check the `launchers` folders

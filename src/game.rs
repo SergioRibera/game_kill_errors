@@ -37,6 +37,7 @@ impl Plugin for Game {
                  mut materials: ResMut<Assets<StandardMaterial>>| {
                     cmd.insert_resource(BugsSpawnTimer {
                         timer: Timer::from_seconds(2., TimerMode::Once),
+                        click_audio: asset_server.load("audio/cursor.wav"),
                         cube: meshes.add(shape::Box::new(2., 0., 3.).into()),
                         material: materials.add(Color::ORANGE.with_a(0.).into()),
                         models: vec![
@@ -75,6 +76,7 @@ pub(crate) struct ScoreTextResource(pub u64);
 #[derive(Resource)]
 struct BugsSpawnTimer {
     timer: Timer,
+    click_audio: Handle<AudioSource>,
     cube: Handle<Mesh>,
     material: Handle<StandardMaterial>,
     models: Vec<Handle<Scene>>,

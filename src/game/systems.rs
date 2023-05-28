@@ -125,6 +125,8 @@ pub(super) fn animate_bugs(
 pub(super) fn kill_detect(
     mut cmd: Commands,
     time: Res<Time>,
+    audio: Res<Audio>,
+    spawn_data: Res<BugsSpawnTimer>,
     mut bugs: Query<(Entity, &Transform, &mut BugData), With<BugPathWalk>>,
     mut score: ResMut<ScoreTextResource>,
     mut click_event: EventReader<BugEntityClickedEvent>,
@@ -153,6 +155,7 @@ pub(super) fn kill_detect(
             }
             score.0 += 1;
             data.clicks += 1;
+            audio.play(spawn_data.click_audio.clone());
             // Spawn particles
             let pos = if let Some(p) = e.1 {
                 p

@@ -18,6 +18,7 @@ env:
 
 jobs:
   ci:
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checks
         uses: ./github/workflows/ci.yml

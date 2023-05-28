@@ -48,6 +48,7 @@ jobs:
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
       - name: Install dependencies
+        if: matrix.os == 'ubuntu-latest'
         run: |
           export DEBIAN_FRONTED=noninteractive
           sudo apt-get -qq update
@@ -61,26 +62,17 @@ jobs:
       - name: Post Build | Prepare artifacts [Windows]
         if: matrix.os == 'windows-latest'
         run: |
-          cd launchers/native
-          7z a ../../${{ matrix.name }} static/
-          cd -
-          cd target/${{ matrix.target }}/release
-          mv native-launcher.exe ${{ env.APP_NAME }}.exe
-          7z a ../../../${{ matrix.name }} ${{ env.APP_NAME }}.exe
-          cd -
+          mv target/${{ matrix.target }}/release/native_kill_errors.exe ../../../${{ env.APP_NAME }}.exe
+          7z a ${{ matrix.name }} ${{ env.APP_NAME }}.exe
           7z a ${{ matrix.name }} assets/
           mv ${{ matrix.name }} ${{ env.APP_NAME }}-${{ matrix.name }}
 
       - name: Post Build | Prepare artifacts [-nix]
         if: matrix.os != 'windows-latest'
         run: |
-          cd launchers/native
-          mv static/ ../../
+          mv target/${{ matrix.target }}/release/native_kill_errors ../../../${{ env.APP_NAME }}
           cd -
-          cd target/${{ matrix.target }}/release
-          mv native-launcher ../../../${{ env.APP_NAME }}
-          cd -
-          tar cvzf ${{ matrix.name }} assets/ static/ ${{ env.APP_NAME }}
+          tar cvzf ${{ matrix.name }} assets/ ${{ env.APP_NAME }}
           mv ${{ matrix.name }} ${{ env.APP_NAME }}-${{ matrix.name }}
 
       - name: Release | Upload

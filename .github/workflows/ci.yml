@@ -50,3 +50,6 @@ on:
       - ".github/release-*.yml"
       - "**/Makefile.toml"
       - "README.md"
+    tags-ignore:
+      - "*"
+  workflow_call:

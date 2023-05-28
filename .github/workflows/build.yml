@@ -7,14 +7,23 @@ env:
   APP_NAME: kill_errors
 
 on:
-  workflow_run:
-    types:
-      - completed
-    workflows: ["CI"]
+  push:
+    paths-ignore:
+      - ".github/build.yml"
+      - ".github/release-*.yml"
+      - "**/Makefile.toml"
+      - "README.md"
+    tags:
+      - "*"
 
 jobs:
+  ci:
+    steps:
+      - name: Checks
+        uses: ./github/workflows/ci.yml
+
   build_native:
-    if: ${{ contains(github.ref_name, 'v') }}
+    needs: ci
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

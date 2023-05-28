@@ -1,16 +1,29 @@
 name: Release WASM (GitHub Pages)
+
+permissions:
+  contents: write
+
 on:
-  workflow_run:
-    types:
-      - completed
-    workflows: ["CI"]
+  push:
+    paths-ignore:
+      - ".github/build.yml"
+      - ".github/release-*.yml"
+      - "**/Makefile.toml"
+      - "README.md"
+    tags:
+      - "*"
 
 env:
   PUBLIC_URL: /wasm-kill-errors/
 
 jobs:
+  ci:
+    steps:
+      - name: Checks
+        uses: ./github/workflows/ci.yml
+
   build:
-    if: ${{ contains(github.ref_name, 'v') }}
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - name: Setup | Checkout

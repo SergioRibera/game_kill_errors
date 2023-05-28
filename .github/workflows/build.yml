@@ -18,11 +18,7 @@ on:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Checks
-        uses: ./.github/workflows/ci.yml
+    uses: ./.github/workflows/ci.yml
 
   build_native:
     needs: ci

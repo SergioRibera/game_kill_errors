@@ -14,7 +14,8 @@ on:
       - "*"
 
 env:
-  PUBLIC_URL: /wasm-kill-errors/
+  APP_NAME: kill_errors
+  PUBLIC_URL: /game_kill_errors/
 
 jobs:
   ci:
@@ -54,10 +55,18 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Setup | Place dist
-        run: mv ./artifact ./dist && tar cvzf wasm-kill-errors.tar.gz dist
+        run: mv ./artifact ./dist && tar cvzf ${{env.APP_NAME}}-wasm32-unknown-unknown.tar.gz dist
 
       - name: Deploy | Github Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist/
+
+      - name: Release | Upload
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{env.APP_NAME}}-wasm32-unknown-unknown.tar.gz
+          prerelease: ${{ contains(github.ref_name, 'a') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

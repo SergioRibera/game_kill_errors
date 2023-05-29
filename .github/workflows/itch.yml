@@ -1,0 +1,33 @@
+name: Upload to itch io
+
+on:
+  workflow_call:
+    inputs:
+      author:
+        required: true
+        type: string
+      file_name:
+        required: true
+        type: string
+      name:
+        required: true
+        type: string
+      os:
+        required: true
+        type: string
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Version
+        run: |
+          echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+      # Upload To Itch.io
+      - uses: robpc/itchio-upload-action@v1
+        env:
+          api-key: ${{ secrets.BUTLER_CREDENTIALS }}
+          channel: ${{ inputs.os }}
+          path: ${{ inputs.file_name }}
+          project: ${{ inputs.author }}/${{ inputs.name }}
+          version: ${{ env.version }}

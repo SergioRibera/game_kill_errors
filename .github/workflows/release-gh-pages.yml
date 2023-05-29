@@ -55,7 +55,10 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Setup | Place dist
-        run: mv ./artifact ./dist && tar cvzf ${{env.APP_NAME}}-wasm32-unknown-unknown.tar.gz dist/* dist/assets
+        run: |
+          mv ./artifact ./dist
+          tar cvzf ${{env.APP_NAME}}-wasm32-unknown-unknown.tar.gz dist/* dist/assets
+          zip -r ${{env.APP_NAME}}-wasm32-unknown-unknown.zip dist/* dist/assets
 
       - name: Deploy | Github Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -70,3 +73,12 @@ jobs:
           prerelease: ${{ contains(github.ref_name, 'a') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  upload-itch:
+    needs: deploy
+    uses: ./.github/workflows/itch.yml
+    with:
+      author: sergioribera
+      file_name: ${{env.APP_NAME}}-wasm32-unknown-unknown.zip
+      name: ${{ env.APP_NAME }}
+      os: html5

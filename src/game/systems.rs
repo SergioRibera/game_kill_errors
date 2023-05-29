@@ -104,13 +104,17 @@ pub(super) fn animate_bugs(
             if let Ok(mut anim) = animation_player.get_mut(children_entity) {
                 match data.state {
                     BugState::Walking => {
-                        anim.play(data.animations.walk.clone_weak()).repeat();
+                        anim.play(data.animations.walk.clone_weak())
+                            .set_speed(1.5)
+                            .repeat();
                     }
                     BugState::Death => {
-                        anim.stop_repeating().play_with_transition(
-                            data.animations.death.clone_weak(),
-                            Duration::from_millis(250),
-                        );
+                        anim.stop_repeating()
+                            .play_with_transition(
+                                data.animations.death.clone_weak(),
+                                Duration::from_millis(250),
+                            )
+                            .set_speed(1.0);
                     }
                     _ => {}
                 }
@@ -126,6 +130,7 @@ pub(super) fn kill_detect(
     mut cmd: Commands,
     time: Res<Time>,
     audio: Res<Audio>,
+    audio_sinks: Res<Assets<AudioSink>>,
     spawn_data: Res<BugsSpawnTimer>,
     mut bugs: Query<(Entity, &Transform, &mut BugData), With<BugPathWalk>>,
     mut score: ResMut<ScoreTextResource>,
@@ -155,7 +160,9 @@ pub(super) fn kill_detect(
             }
             score.0 += 1;
             data.clicks += 1;
-            audio.play(spawn_data.click_audio.clone());
+            if let Some(sink) = audio_sinks.get(&audio.play(spawn_data.click_audio.clone())) {
+                sink.set_volume(0.5);
+            }
             // Spawn particles
             let pos = if let Some(p) = e.1 {
                 p

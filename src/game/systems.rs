@@ -142,14 +142,21 @@ pub(super) fn kill_detect(
     for (entity, bug_transform, mut data) in bugs.iter_mut() {
         // if bug is killed
         if data.is_dead() {
+            let mut entity = cmd.entity(entity);
             // play dead animation
-            data.state = BugState::Death;
+            if data.state != BugState::Death {
+                data.state = BugState::Death;
+                entity
+                    .remove::<PickableBundle>()
+                    .remove::<RaycastPickTarget>()
+                    .remove::<OnPointer<Click>>();
+            }
             // run countdown for remove from scene
             if data.wait_for_remove.tick(time.delta()).finished() {
                 effect.send(EffectTypeEvent::Dead {
                     pos: bug_transform.translation,
                 });
-                cmd.entity(entity).despawn_recursive();
+                entity.despawn_recursive();
             }
             continue;
         }

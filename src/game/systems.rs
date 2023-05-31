@@ -190,6 +190,9 @@ pub(super) fn score_print(
     mut game_state: ResMut<NextState<GameState>>,
     score: Res<ScoreTextResource>,
 ) {
+    if text.is_empty() {
+        return;
+    }
     let mut text = text.single_mut();
     text.sections[0].value = score.0.to_string();
 

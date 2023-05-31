@@ -6,11 +6,13 @@ workspace = "../.."
 
 [features]
 default = []
-inspect = ["game/inspect"]
+inspect = ["game/inspect", "wasm-logger"]
 
 [dependencies]
 bevy.workspace = true
+log.workspace = true
 game = { path = "../.." }
 yew = { version = "0.20", features = ["csr"] }
 
+wasm-logger = { version = "0.2.0", optional = true }
 web-sys = { version = "0.3.62", features = ["Document", "Window"] }

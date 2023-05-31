@@ -6,5 +6,5 @@ fn open_url(url: &str) {
 
 fn main() {
     info!("Starting launcher: Native");
-    game::app(true, open_url).run();
+    game::app(true, game::LocaleLangs::EN, open_url).run();
 }

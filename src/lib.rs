@@ -1,6 +1,6 @@
 use bevy::{
-    core_pipeline::clear_color::ClearColorConfig, prelude::*, render::camera::ScalingMode,
-    window::WindowMode,
+    core_pipeline::clear_color::ClearColorConfig, log::LogPlugin, prelude::*,
+    render::camera::ScalingMode, window::WindowMode,
 };
 #[cfg(feature = "inspect")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -11,6 +11,7 @@ use effects::EffectsPlugin;
 use game::Game;
 use lazy_static::lazy_static;
 
+use locale::LocalePlugin;
 use ui::UiPlugin;
 
 mod effects;
@@ -18,7 +19,10 @@ mod ext;
 mod game;
 mod helper;
 mod lens;
+mod locale;
 mod ui;
+
+pub use locale::LocaleLangs;
 
 //
 // Launcher Game Enviroment Variables
@@ -50,7 +54,7 @@ pub(crate) enum GameState {
     Game,
 }
 
-pub fn app(fullscreen: bool, open_url: fn(&str)) -> App {
+pub fn app(fullscreen: bool, lang: LocaleLangs, open_url: fn(&str)) -> App {
     let mode = if fullscreen {
         WindowMode::BorderlessFullscreen
     } else {
@@ -59,25 +63,31 @@ pub fn app(fullscreen: bool, open_url: fn(&str)) -> App {
 
     let mut app = App::new();
     app.insert_resource(OpenLinkResource(Box::new(open_url)))
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                mode,
-                title: LAUNCHER_TITLE.to_string(),
-                fit_canvas_to_parent: true,
-                prevent_default_event_handling: true,
-                present_mode: bevy::window::PresentMode::AutoVsync,
-                decorations: false,
-                ..default()
-            }),
-            ..default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        mode,
+                        title: LAUNCHER_TITLE.to_string(),
+                        fit_canvas_to_parent: true,
+                        prevent_default_event_handling: true,
+                        present_mode: bevy::window::PresentMode::AutoVsync,
+                        decorations: false,
+                        ..default()
+                    }),
+                    ..default()
+                })
+                .disable::<LogPlugin>(),
+        )
         .add_plugins(DefaultPickingPlugins.build())
         .add_plugin(Sprite3dPlugin)
         .add_plugin(TweeningPlugin);
     #[cfg(feature = "inspect")]
     app.add_plugin(WorldInspectorPlugin::new());
     app.add_state::<GameState>()
+        .insert_resource(lang)
         .add_startup_system(setup_camera)
+        .add_plugin(LocalePlugin)
         .add_plugin(UiPlugin)
         .add_plugin(EffectsPlugin)
         .add_plugin(Game);

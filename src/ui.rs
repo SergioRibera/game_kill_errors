@@ -6,7 +6,8 @@ use bevy_tweening::{Animator, Delay, EaseFunction, Tween, TweenCompleted};
 use crate::{
     game::ScoreText,
     lens::{GameTextColorLens, InstanceLens},
-    OpenLinkResource, HOME_URL, TIME_WAIT_TO_START,
+    locale::LocaleAsset,
+    LocaleLangs, OpenLinkResource, HOME_URL, TIME_WAIT_TO_START,
 };
 
 #[derive(Component)]
@@ -16,14 +17,43 @@ pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(setup_ui)
-            .add_systems((button_system, remove_screen.run_if(run_if_anim)));
+        app.add_startup_system(|mut cmd: Commands, asset_server: Res<AssetServer>| {
+            cmd.insert_resource(UiResources {
+                languages: vec![
+                    asset_server.load("locale/en-EN.locale"), // english dictionary
+                    asset_server.load("locale/es-ES.locale"), //spanish dictionary
+                ],
+            });
+        })
+        .add_systems((
+            setup_ui,
+            button_system,
+            remove_screen.run_if(run_if_anim),
+        ));
     }
 }
 
-fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
+#[derive(Resource)]
+struct UiResources {
+    languages: Vec<Handle<LocaleAsset>>,
+}
+
+fn setup_ui(
+    mut cmd: Commands,
+    ui_res: Res<UiResources>,
+    asset_serve: Res<AssetServer>,
+    lang: Res<LocaleLangs>,
+    languages: Res<Assets<LocaleAsset>>,
+    mut runned: Local<bool>,
+) {
+    if *runned {
+        return;
+    }
     let font_regular = asset_serve.load("fonts/Lato-Regular.ttf");
     let font_light = asset_serve.load("fonts/Lato-Light.ttf");
+
+    let Some(lang) = languages.get(&ui_res.languages[*lang as usize]) else { return; };
+    *runned = true;
 
     // 404 text
     cmd.spawn(NodeBundle {
@@ -53,7 +83,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
                         },
                     ),
                     TextSection::new(
-                        "Al parecer no encontramos lo que buscas",
+                        lang.get_default("message1", "Al parecer no encontramos lo que buscas"),
                         TextStyle {
                             font: font_light.clone(),
                             font_size: 32.,
@@ -88,7 +118,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
             cmd.spawn((
                 TextBundle {
                     text: Text::from_section(
-                        "Volver al Inicio",
+                        lang.get_default("button", "Volver al Inicio"),
                         TextStyle {
                             font: font_light.clone(),
                             font_size: 32.,
@@ -137,7 +167,7 @@ fn setup_ui(mut cmd: Commands, asset_serve: Res<AssetServer>) {
                     ..default()
                 },
                 text: Text::from_section(
-                    "La paciencia es una gran virtud",
+                    lang.get_default("message2", "La paciencia es una gran virtud"),
                     TextStyle {
                         font: font_regular.clone(),
                         font_size: 32.,

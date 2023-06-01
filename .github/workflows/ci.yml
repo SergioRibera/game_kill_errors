@@ -46,8 +46,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - ".github/build.yml"
-      - ".github/release-*.yml"
+      - ".github/"
       - "**/Makefile.toml"
       - "README.md"
     tags-ignore:

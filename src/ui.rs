@@ -25,11 +25,7 @@ impl Plugin for UiPlugin {
                 ],
             });
         })
-        .add_systems((
-            setup_ui,
-            button_system,
-            remove_screen.run_if(run_if_anim),
-        ));
+        .add_systems((setup_ui, button_system, remove_screen.run_if(run_if_anim)));
     }
 }
 

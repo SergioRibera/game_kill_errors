@@ -42,10 +42,8 @@ impl AssetLoader for LocaleAssetLoader {
             log::info!("File Readed");
             asset.value.clear();
             for line in content.lines() {
-                if !line.starts_with("#") {
-                    let mut pair = line.splitn(2, '=');
-                    let key = pair.next().unwrap();
-                    let value = pair.next().unwrap();
+                if !line.starts_with('#') {
+                    let (key, value) = line.split_once('=').unwrap();
                     asset
                         .value
                         .insert(key.trim().to_string(), value.trim().to_string());

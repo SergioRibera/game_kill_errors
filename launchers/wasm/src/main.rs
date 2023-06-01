@@ -35,7 +35,7 @@ fn get_lang() -> LocaleLangs {
         return lang;
     }
     let nav_lang = web_sys::window()
-        .and_then(|w| Some(w.navigator()))
+        .map(|w| w.navigator())
         .expect("Unable to get navigator")
         .language()
         .unwrap();

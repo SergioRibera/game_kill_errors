@@ -82,5 +82,5 @@ jobs:
     with:
       author: sergioribera
       file_name: ${{ needs.deploy.outputs.APP_NAME }}-wasm32-unknown-unknown.zip
-      name: ${{ env.APP_NAME }}
+      name: ${{ needs.deploy.outputs.APP_NAME }}
       os: html5

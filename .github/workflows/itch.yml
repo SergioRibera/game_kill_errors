@@ -25,7 +25,7 @@ jobs:
           echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
       # Upload To Itch.io
       - uses: SergioRibera/itchio-upload-action@main
-        env:
+        with:
           api-key: ${{ secrets.BUTLER_CREDENTIALS }}
           channel: ${{ inputs.os }}
           path: ${{ inputs.file_name }}

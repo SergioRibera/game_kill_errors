@@ -24,7 +24,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set Version
+        env:
+          name: ${{ inputs.name }}
         run: |
+          echo "fixed_name=${name//-/_}" >> $GITHUB_ENV
           echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
       # Upload To Itch.io
       - continue-on-error: ${{ inputs.os == 'html5' }}
@@ -33,5 +36,5 @@ jobs:
           api-key: ${{ secrets.BUTLER_CREDENTIALS }}
           channel: ${{ inputs.os }}
           path: ${{ inputs.file_name }}
-          project: ${{ inputs.author }}/${{ inputs.name }}
+          project: ${{ inputs.author }}/${{ env.fixed_name }}
           version: ${{ env.version }}

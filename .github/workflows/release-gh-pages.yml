@@ -78,6 +78,7 @@ jobs:
 
   upload-itch:
     needs: deploy
+    secrets: inherit
     uses: ./.github/workflows/itch.yml
     with:
       author: sergioribera

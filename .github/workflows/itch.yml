@@ -15,7 +15,9 @@ on:
       os:
         required: true
         type: string
-    secrets: inherit
+    secrets:
+      BUTLER_CREDENTIALS:
+        required: true
 
 jobs:
   upload:

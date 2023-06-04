@@ -89,6 +89,7 @@ jobs:
 
   upload-itch:
     needs: build_native
+    secrets: inherit
     uses: ./.github/workflows/itch.yml
     strategy:
       fail-fast: false

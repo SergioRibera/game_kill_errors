@@ -27,7 +27,7 @@ jobs:
         env:
           name: ${{ inputs.name }}
         run: |
-          echo "fixed_name=${name//-/_}" >> $GITHUB_ENV
+          echo "fixed_name=${name//_/-}" >> $GITHUB_ENV
           echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
       # Upload To Itch.io
       - continue-on-error: ${{ inputs.os == 'html5' }}

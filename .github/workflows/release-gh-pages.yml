@@ -7,7 +7,7 @@ on:
   push:
     paths-ignore:
       - ".github/build.yml"
-      - ".github/release-*.yml"
+      - ".github/release-**.yml"
       - "**/Makefile.toml"
       - "README.md"
     tags:
@@ -15,7 +15,6 @@ on:
 
 env:
   APP_NAME: kill_errors
-  PUBLIC_URL: /game_kill_errors/
 
 jobs:
   ci:
@@ -40,7 +39,7 @@ jobs:
       - name: Build | Trunk
         run: |
           cd launchers/wasm
-          trunk build --release --public-url ${{ env.PUBLIC_URL }}
+          trunk build --release
 
       - name: Post Build | Upload dist
         uses: actions/upload-artifact@v3

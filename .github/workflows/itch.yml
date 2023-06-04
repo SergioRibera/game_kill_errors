@@ -27,7 +27,8 @@ jobs:
         run: |
           echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
       # Upload To Itch.io
-      - uses: robpc/itchio-upload-action@v1
+      - continue-on-error: ${{ inputs.os == 'html5' }}
+        uses: robpc/itchio-upload-action@v1
         with:
           api-key: ${{ secrets.BUTLER_CREDENTIALS }}
           channel: ${{ inputs.os }}

@@ -26,7 +26,7 @@ jobs:
       - name: Setup | Download dist
         uses: actions/download-artifact@v3
         with:
-          path: ${{ inputs.file_name }}
+          name: ${{ inputs.file_name }}
 
       - name: Set Version
         env:
@@ -40,6 +40,6 @@ jobs:
         with:
           api-key: ${{ secrets.BUTLER_CREDENTIALS }}
           channel: ${{ inputs.os }}
-          path: ${{ inputs.file_name }}
+          path: artifact/${{ inputs.file_name }}
           project: ${{ inputs.author }}/${{ env.fixed_name }}
           version: ${{ env.version }}

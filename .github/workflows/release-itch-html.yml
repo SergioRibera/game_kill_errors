@@ -1,4 +1,4 @@
-name: Release WASM (GitHub Pages)
+name: Release WASM (Itchio)
 
 permissions:
   contents: write

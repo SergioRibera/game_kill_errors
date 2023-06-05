@@ -61,6 +61,6 @@ jobs:
     uses: ./.github/workflows/itch.yml
     with:
       author: sergioribera
-      file_name: ${{ needs.deploy.outputs.APP_NAME }}-wasm32-unknown-unknown.zip
-      name: ${{ needs.deploy.outputs.APP_NAME }}
+      file_name: ${{ needs.build.outputs.APP_NAME }}-wasm32-unknown-unknown.zip
+      name: ${{ needs.build.outputs.APP_NAME }}
       os: html5

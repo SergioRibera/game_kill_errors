@@ -23,6 +23,11 @@ jobs:
   upload:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup | Download dist
+        uses: actions/download-artifact@v3
+        with:
+          path: ${{ inputs.file_name }}
+
       - name: Set Version
         env:
           name: ${{ inputs.name }}

@@ -15,6 +15,7 @@ on:
 
 env:
   APP_NAME: kill_errors
+  PUBLIC_URL: /game_kill_errors/
 
 jobs:
   ci:
@@ -39,7 +40,7 @@ jobs:
       - name: Build | Trunk
         run: |
           cd launchers/wasm
-          trunk build --release
+          trunk build --release --public-url ${{ env.PUBLIC_URL }}
 
       - name: Post Build | Upload dist
         uses: actions/upload-artifact@v3
@@ -57,9 +58,8 @@ jobs:
 
       - name: Setup | Place dist
         run: |
-          mv ./artifact ./dist
-          tar cvzf ${{env.APP_NAME}}-wasm32-unknown-unknown.tar.gz dist/* dist/assets
-          zip -r ${{env.APP_NAME}}-wasm32-unknown-unknown.zip dist/* dist/assets
+          cd artifact
+          find . -type f -exec tar rvf ../${{env.APP_NAME}}-wasm32-unknown-unknown.tar.gz {} \;
 
       - name: Deploy | Github Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -69,18 +69,8 @@ jobs:
 
       - name: Release | Upload
         uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: ${{env.APP_NAME}}-wasm32-unknown-unknown.tar.gz
           prerelease: ${{ contains(github.ref_name, 'a') }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  upload-itch:
-    needs: deploy
-    secrets: inherit
-    uses: ./.github/workflows/itch.yml
-    with:
-      author: sergioribera
-      file_name: ${{ needs.deploy.outputs.APP_NAME }}-wasm32-unknown-unknown.zip
-      name: ${{ needs.deploy.outputs.APP_NAME }}
-      os: html5

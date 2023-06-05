@@ -56,7 +56,7 @@ jobs:
           path: ${{env.APP_NAME}}-wasm32-unknown-unknown.zip
 
   upload-itch:
-    needs: deploy
+    needs: build
     secrets: inherit
     uses: ./.github/workflows/itch.yml
     with:

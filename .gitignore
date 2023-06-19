@@ -1,4 +1,6 @@
 launchers/*/assets
+launchers/mobile/android/gradle
+launchers/mobile/android/.gradle
 ***/dist
 ***/target
 ***/Cargo.lock

@@ -1,0 +1,25 @@
+[package]
+name = "mobile_kill_errors"
+version = "1.0.0"
+authors = ["Sergio Ribera <sergioalejandroriberacosta@gmail.com>"]
+edition = "2021"
+workspace = "../../"
+
+[lib]
+name = "game"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+bevy.workspace = true
+game.path = "../../"
+
+[patch.crates-io]
+android-activity = { git = "https://github.com/MarijnS95/android-activity/", branch = "na-resize" }
+
+[package.metadata]
+app_name = "404 - Kill Errors"
+assets = ["../../assets"]
+
+[package.metadata.apple]
+resources = ["../../res/apple"]
+release_build_targets = ["aarch64-apple-ios", "x86_64-apple-ios"]

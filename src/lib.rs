@@ -44,8 +44,8 @@ lazy_static! {
     };
 }
 
-#[derive(Clone, Resource)]
-pub(crate) struct OpenLinkResource(pub Box<fn(&str)>);
+#[derive(Resource)]
+pub(crate) struct OpenLinkResource(pub Box<dyn Fn(&str) + Sync + Send + 'static>);
 
 #[derive(Clone, Default, Debug, Hash, States, PartialEq, Eq)]
 pub(crate) enum GameState {
@@ -54,7 +54,11 @@ pub(crate) enum GameState {
     Game,
 }
 
-pub fn app(fullscreen: bool, lang: LocaleLangs, open_url: fn(&str)) -> App {
+pub fn app(
+    fullscreen: bool,
+    lang: LocaleLangs,
+    open_url: impl Fn(&str) + Sync + Send + 'static,
+) -> App {
     let mode = if fullscreen {
         WindowMode::BorderlessFullscreen
     } else {

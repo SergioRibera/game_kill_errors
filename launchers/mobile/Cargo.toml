@@ -13,9 +13,6 @@ crate-type = ["staticlib", "cdylib"]
 bevy.workspace = true
 game.path = "../../"
 
-[patch.crates-io]
-android-activity = { git = "https://github.com/MarijnS95/android-activity/", branch = "na-resize" }
-
 [package.metadata]
 app_name = "404 - Kill Errors"
 assets = ["../../assets"]

@@ -40,7 +40,7 @@ jobs:
         run: gradle assembleRelease -p launchers/mobile/android
       - name: Rename APK
         run: |
-          cp launchers/mobile/android/build/outputs/apk/release/android-release.apk ${{ env.APP_NAME }}.apk
+          cp launchers/mobile/android/build/outputs/apk/release/android-release-unsigned.apk ${{ env.APP_NAME }}.apk
       - name: build aab
         run: |
           apk2aab ${{ env.APP_NAME }}.apk ${{ env.APP_NAME }}.aab

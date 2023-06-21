@@ -34,7 +34,7 @@ jobs:
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
       - run: |
-          echo ${{ secrets.KEYSTORE }} | base64 --decode > ${{ env.APP_NAME }}.keystore
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > ${{ env.APP_NAME }}.keystore
       # Start to build
       - name: build apk
         run: gradle assembleRelease -p launchers/mobile/android

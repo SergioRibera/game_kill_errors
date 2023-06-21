@@ -1,4 +1,4 @@
-name: Build
+name: Build Android
 
 permissions:
   contents: write

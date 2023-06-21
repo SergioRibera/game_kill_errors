@@ -62,4 +62,6 @@ bevy_tweening = { version = "0.7.0", default-features = false, features = [
 
 [patch.crates-io]
 android-activity = { git = "https://github.com/rust-mobile/android-activity", rev = "79e03e08fbf70e374cb88d8ef8c89acaa006bbfc" }
+bevy_ui = { git = "https://github.com/bevyengine/bevy", rev = "ffc62c1a81bc2d4a50e61c3f5919bc3424305234" }
+bevy_text = { git = "https://github.com/bevyengine/bevy", rev = "ffc62c1a81bc2d4a50e61c3f5919bc3424305234" }
 bevy_tweening = { git = "https://github.com/sibsibsib/bevy_tweening", branch = "mirrored_repeat_fix" }

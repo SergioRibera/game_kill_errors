@@ -145,6 +145,7 @@ pub(super) fn kill_detect(
             let mut entity = cmd.entity(entity);
             // play dead animation
             if data.state != BugState::Death {
+                score.0 += 1;
                 data.state = BugState::Death;
                 entity
                     .remove::<PickableBundle>()
@@ -165,7 +166,6 @@ pub(super) fn kill_detect(
             if e.0.index() != entity.index() {
                 continue;
             }
-            score.0 += 1;
             data.clicks += 1;
             if let Some(sink) = audio_sinks.get(&audio.play(spawn_data.click_audio.clone())) {
                 sink.set_volume(0.5);

@@ -38,12 +38,12 @@ jobs:
       # Start to build
       - name: build apk
         run: gradle assembleRelease -p launchers/mobile/android
+      - name: build aab
+        run: gradle bundleRelease -p launchers/mobile/android
       - name: Rename APK
         run: |
           cp launchers/mobile/android/build/outputs/apk/release/android-release-unsigned.apk ${{ env.APP_NAME }}.apk
-      - name: build aab
-        run: |
-          apk2aab ${{ env.APP_NAME }}.apk ${{ env.APP_NAME }}.aab
+          cp launchers/mobile/android/build/outputs/bundle/release/android-release.aab ${{ env.APP_NAME }}.aab
       - name: Sign Bundles
         run: |
           echo ${{ secrets.KEYSTORE_PASSWORD }} | apksigner sign --ks ${{ env.APP_NAME }}.keystore --ks-key-alias ${{ env.APP_NAME }} ${{ env.APP_NAME }}.apk

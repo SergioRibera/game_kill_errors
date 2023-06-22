@@ -74,5 +74,5 @@ jobs:
     with:
       author: sergioribera
       file_name: ${{ needs.native_build.outputs.APP_NAME }}.apk
-      name: ${{ needs.build.outputs.APP_NAME }}
+      name: ${{ needs.native_build.outputs.APP_NAME }}
       os: android

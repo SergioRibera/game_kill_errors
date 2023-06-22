@@ -58,17 +58,18 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
+          path: dist
 
       - name: Setup | Place dist
         run: |
-          cd artifact
+          cd dist
           find . -type f -exec tar rvf ../${{env.APP_NAME}}-wasm32-unknown-unknown.tar.gz {} \;
 
       - name: Deploy | Github Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./artifact
+          publish_dir: ./dist
 
       - name: Release | Upload
         uses: softprops/action-gh-release@v1

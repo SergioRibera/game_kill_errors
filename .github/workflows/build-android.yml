@@ -50,7 +50,7 @@ jobs:
           echo "${{ secrets.KEYSTORE_PASSWORD }}" | apksigner sign --ks ${{ env.APP_NAME }}.keystore --ks-key-alias ${{ env.APP_NAME }} ${{ env.APP_NAME }}.apk
           echo "${{ secrets.KEYSTORE_PASSWORD }}" | jarsigner -keystore ${{ env.APP_NAME }}.keystore ${{ env.APP_NAME }}.aab ${{ env.APP_NAME }}
       - name: Upload to Playstore
-        if: ${{ env.UPLOAD_PLAY_STORE }}
+        if: ${{ env.UPLOAD_PLAY_STORE }} == true
         uses: r0adkll/upload-google-play@v1
         with:
           inAppUpdatePriority: 2

@@ -8,6 +8,7 @@ env:
   UPLOAD_PLAY_STORE: false
 
 on:
+  workflow_dispatch:
   push:
     paths-ignore:
       - ".github/build.yml"
@@ -46,8 +47,8 @@ jobs:
           cp launchers/mobile/android/build/outputs/bundle/release/android-release.aab ${{ env.APP_NAME }}.aab
       - name: Sign Bundles
         run: |
-          echo ${{ secrets.KEYSTORE_PASSWORD }} | apksigner sign --ks ${{ env.APP_NAME }}.keystore --ks-key-alias ${{ env.APP_NAME }} ${{ env.APP_NAME }}.apk
-          echo ${{ secrets.KEYSTORE_PASSWORD }} | jarsigner -keystore ${{ env.APP_NAME }}.keystore ${{ env.APP_NAME }}.aab ${{ env.APP_NAME }}
+          echo "${{ secrets.KEYSTORE_PASSWORD }}" | apksigner sign --ks ${{ env.APP_NAME }}.keystore --ks-key-alias ${{ env.APP_NAME }} ${{ env.APP_NAME }}.apk
+          echo "${{ secrets.KEYSTORE_PASSWORD }}" | jarsigner -keystore ${{ env.APP_NAME }}.keystore ${{ env.APP_NAME }}.aab ${{ env.APP_NAME }}
       - name: Upload to Playstore
         if: ${{ env.UPLOAD_PLAY_STORE }}
         uses: r0adkll/upload-google-play@v1

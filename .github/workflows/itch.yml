@@ -40,6 +40,6 @@ jobs:
         with:
           api-key: ${{ secrets.BUTLER_CREDENTIALS }}
           channel: ${{ inputs.os }}
-          path: artifact/${{ inputs.file_name }}
+          path: ${{ inputs.file_name }}
           project: ${{ inputs.author }}/${{ env.fixed_name }}
           version: ${{ env.version }}

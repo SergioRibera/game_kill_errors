@@ -11,6 +11,7 @@ on:
   push:
     paths-ignore:
       - ".github/build.yml"
+      - ".github/build-**.yml"
       - ".github/release-**.yml"
       - "**/Makefile.toml"
       - "README.md"

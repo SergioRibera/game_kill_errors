@@ -2,9 +2,10 @@
 ![Screenshot_20230527_161932](https://github.com/SergioRibera/game_kill_errors/assets/56278796/3b6a9811-d1a1-4783-a052-18a233515971)
 
 <p align="center">
-	<img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/SergioRibera/game_kill_errors/ci.yml?label=ci&style=flat-square">
-	<img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/SergioRibera/game_kill_errors/build.yml?label=Build%20Native&style=flat-square">
-	<a href="https://sergioribera.github.io/game_kill_errors"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/SergioRibera/game_kill_errors/release-gh-pages.yml?label=Build%20Web&style=flat-square"></a>
+    <img alt="GitHub CI Workflow Status" src="https://img.shields.io/github/actions/workflow/status/SergioRibera/game_kill_errors/ci.yml?label=ci&style=flat-square">
+    <img alt="GitHub Build Workflow Status" src="https://img.shields.io/github/actions/workflow/status/SergioRibera/game_kill_errors/build.yml?label=Build%20Native&style=flat-square">
+    <img alt="GitHub Android Workflow Status" src="https://img.shields.io/github/actions/workflow/status/SergioRibera/game_kill_errors/build-android.yml?label=Build%20Android&style=flat-square">
+    <a href="https://sergioribera.github.io/game_kill_errors"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/SergioRibera/game_kill_errors/release-gh-pages.yml?label=Build%20Web&style=flat-square"></a>
     <a href="https://github.com/SergioRibera/game_kill_errors/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SergioRibera/game_kill_errors?label=download&style=flat-square"></a>
 </p>
 

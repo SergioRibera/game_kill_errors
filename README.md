@@ -14,9 +14,9 @@
 - Native (MacOs, Linux & Windows)
 - Web (Wasm)
 - Library (Usable in other rust proyects)
-- Mobile (⚠️ Soon)
+- Mobile
   - Android
-  - iOS
+  - iOS (⚠️ Soon)
 
 # Requirements
 - Rust

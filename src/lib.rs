@@ -84,17 +84,13 @@ pub fn app(
                 .disable::<LogPlugin>(),
         )
         .add_plugins(DefaultPickingPlugins.build())
-        .add_plugin(Sprite3dPlugin)
-        .add_plugin(TweeningPlugin);
+        .add_plugins((Sprite3dPlugin, TweeningPlugin));
     #[cfg(feature = "inspect")]
-    app.add_plugin(WorldInspectorPlugin::new());
+    app.add_plugins(WorldInspectorPlugin::new());
     app.add_state::<GameState>()
         .insert_resource(lang)
-        .add_startup_system(setup_camera)
-        .add_plugin(LocalePlugin)
-        .add_plugin(UiPlugin)
-        .add_plugin(EffectsPlugin)
-        .add_plugin(Game);
+        .add_systems(Startup, setup_camera)
+        .add_plugins((LocalePlugin, UiPlugin, EffectsPlugin, Game));
 
     app
 }

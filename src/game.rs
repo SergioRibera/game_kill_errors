@@ -2,6 +2,7 @@ mod components;
 mod systems;
 
 use bevy::prelude::*;
+use bevy_eventlistener::callbacks::ListenerInput;
 use bevy_mod_picking::prelude::*;
 
 use components::*;
@@ -30,40 +31,46 @@ impl Plugin for Game {
             .register_type::<BugPathWalk>()
             .register_type::<BugData>()
             .add_event::<BugEntityClickedEvent>()
-            .add_startup_system(
-                |mut cmd: Commands,
-                 asset_server: Res<AssetServer>,
-                 mut meshes: ResMut<Assets<Mesh>>,
-                 mut materials: ResMut<Assets<StandardMaterial>>| {
-                    cmd.insert_resource(BugsSpawnTimer {
-                        timer: Timer::from_seconds(2., TimerMode::Once),
-                        click_audio: asset_server.load("audio/cursor.wav"),
-                        cube: meshes.add(shape::Box::new(2., 0., 3.).into()),
-                        material: materials.add(Color::ORANGE.with_a(0.).into()),
-                        models: vec![
-                            asset_server.load("animated_3d/spider.glb#Scene0"), //spider
-                            asset_server.load("animated_3d/crab.glb#Scene0"),   //crab
-                        ],
-                        animations: vec![
-                            // Spider Walk
-                            asset_server.load("animated_3d/spider.glb#Animation4"),
-                            // Spider Death
-                            asset_server.load("animated_3d/spider.glb#Animation1"),
-                            // Crab Walk
-                            asset_server.load("animated_3d/crab.glb#Animation1"),
-                            // Crab Death
-                            asset_server.load("animated_3d/crab.glb#Animation0"),
-                        ],
-                    })
-                },
+            .add_systems(
+                Startup,
+                (
+                    |mut cmd: Commands,
+                     asset_server: Res<AssetServer>,
+                     mut meshes: ResMut<Assets<Mesh>>,
+                     mut materials: ResMut<Assets<StandardMaterial>>| {
+                        cmd.insert_resource(BugsSpawnTimer {
+                            timer: Timer::from_seconds(2., TimerMode::Once),
+                            click_audio: asset_server.load("audio/cursor.wav"),
+                            cube: meshes.add(shape::Box::new(2., 0., 3.).into()),
+                            material: materials.add(Color::ORANGE.with_a(0.).into()),
+                            models: vec![
+                                asset_server.load("animated_3d/spider.glb#Scene0"), //spider
+                                asset_server.load("animated_3d/crab.glb#Scene0"),   //crab
+                            ],
+                            animations: vec![
+                                // Spider Walk
+                                asset_server.load("animated_3d/spider.glb#Animation4"),
+                                // Spider Death
+                                asset_server.load("animated_3d/spider.glb#Animation1"),
+                                // Crab Walk
+                                asset_server.load("animated_3d/crab.glb#Animation1"),
+                                // Crab Death
+                                asset_server.load("animated_3d/crab.glb#Animation0"),
+                            ],
+                        })
+                    },
+                ),
             )
-            .add_systems((
-                factory_bugs.run_if(in_state(GameState::Game)),
-                animate_bugs,
-                movement_bugs,
-                kill_detect,
-                score_print,
-            ));
+            .add_systems(
+                Update,
+                (
+                    factory_bugs.run_if(in_state(GameState::Game)),
+                    animate_bugs,
+                    movement_bugs,
+                    kill_detect,
+                    score_print,
+                ),
+            );
     }
 }
 
@@ -83,7 +90,7 @@ struct BugsSpawnTimer {
     animations: Vec<Handle<AnimationClip>>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 struct BugAnimations {
     walk: Handle<AnimationClip>,
     death: Handle<AnimationClip>,
@@ -106,10 +113,11 @@ impl BugAnimations {
     }
 }
 
+#[derive(Event)]
 struct BugEntityClickedEvent(Entity, Option<Vec3>);
 
-impl From<ListenedEvent<Click>> for BugEntityClickedEvent {
-    fn from(event: ListenedEvent<Click>) -> Self {
-        BugEntityClickedEvent(event.target, event.hit.position)
+impl From<ListenerInput<Pointer<Down>>> for BugEntityClickedEvent {
+    fn from(event: ListenerInput<Pointer<Down>>) -> Self {
+        Self(event.target, event.hit.position)
     }
 }

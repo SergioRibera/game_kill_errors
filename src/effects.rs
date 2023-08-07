@@ -9,7 +9,8 @@ impl Plugin for EffectsPlugin {
             .register_type::<Effect>()
             .insert_resource(ImageAssets::default())
             // initially load assets
-            .add_startup_system(
+            .add_systems(
+                Startup,
                 |asset_server: Res<AssetServer>,
                  mut assets: ResMut<ImageAssets>,
                  mut texture_atlases: ResMut<Assets<TextureAtlas>>| {
@@ -34,8 +35,7 @@ impl Plugin for EffectsPlugin {
                     ));
                 },
             )
-            .add_system(spawn_particles)
-            .add_system(animate_sprite);
+            .add_systems(Update, (spawn_particles, animate_sprite));
     }
 }
 
@@ -53,6 +53,7 @@ struct Effect {
     timer: Timer,
 }
 
+#[derive(Event)]
 pub enum EffectTypeEvent {
     Click { pos: Vec3 },
     Dead { pos: Vec3 },

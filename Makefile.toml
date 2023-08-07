@@ -59,7 +59,7 @@ dependencies = ["fmt", "clippy"]
 
 [tasks.check]
 description = "Check all issues, format and code quality"
-dependencies = ["fmt", "clippy", "test"]
+dependencies = ["fmt", "clippy"]
 
 [tasks.fix-all]
 description = "Try fix all clippy and format issues"

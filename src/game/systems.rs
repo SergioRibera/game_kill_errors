@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use bevy::audio::VolumeLevel;
 use bevy::prelude::*;
 use bevy_mod_picking::prelude::*;
 use bevy_tweening::TweenCompleted;
@@ -41,8 +42,17 @@ pub(super) fn factory_bugs(
         },
         PickableBundle::default(),
         RaycastPickTarget::default(),
-        OnPointer::<Click>::send_event::<BugEntityClickedEvent>(),
+        On::<Pointer<Down>>::send_event::<BugEntityClickedEvent>(),
         BugData::factory(score.0, animations),
+        AudioBundle {
+            source: spawn_data.click_audio.clone(),
+            settings: PlaybackSettings {
+                mode: bevy::audio::PlaybackMode::Once,
+                volume: bevy::audio::Volume::Relative(VolumeLevel::new(0.5)),
+                speed: 1.,
+                paused: true,
+            },
+        },
         BugPathWalk {
             points,
             current_path: 0,
@@ -102,6 +112,7 @@ pub(super) fn animate_bugs(
         data.last_state = data.state;
         for children_entity in children.iter_descendants(entity) {
             if let Ok(mut anim) = animation_player.get_mut(children_entity) {
+                log::debug!("Entity State: {:?}", data.state);
                 match data.state {
                     BugState::Walking => {
                         anim.play(data.animations.walk.clone_weak())
@@ -129,17 +140,14 @@ pub(super) fn animate_bugs(
 pub(super) fn kill_detect(
     mut cmd: Commands,
     time: Res<Time>,
-    audio: Res<Audio>,
-    audio_sinks: Res<Assets<AudioSink>>,
-    spawn_data: Res<BugsSpawnTimer>,
-    mut bugs: Query<(Entity, &Transform, &mut BugData), With<BugPathWalk>>,
+    mut bugs: Query<(Entity, &Transform, &AudioSink, &mut BugData), With<BugPathWalk>>,
     mut score: ResMut<ScoreTextResource>,
     mut click_event: EventReader<BugEntityClickedEvent>,
     mut effect: EventWriter<EffectTypeEvent>,
 ) {
     let clicks = click_event.iter().collect::<Vec<&BugEntityClickedEvent>>();
 
-    for (entity, bug_transform, mut data) in bugs.iter_mut() {
+    for (entity, bug_transform, audio, mut data) in bugs.iter_mut() {
         // if bug is killed
         if data.is_dead() {
             let mut entity = cmd.entity(entity);
@@ -150,7 +158,7 @@ pub(super) fn kill_detect(
                 entity
                     .remove::<PickableBundle>()
                     .remove::<RaycastPickTarget>()
-                    .remove::<OnPointer<Click>>();
+                    .remove::<On<Pointer<Click>>>();
             }
             // run countdown for remove from scene
             if data.wait_for_remove.tick(time.delta()).finished() {
@@ -167,9 +175,7 @@ pub(super) fn kill_detect(
                 continue;
             }
             data.clicks += 1;
-            if let Some(sink) = audio_sinks.get(&audio.play(spawn_data.click_audio.clone())) {
-                sink.set_volume(0.5);
-            }
+            audio.play();
             // Spawn particles
             let pos = if let Some(p) = e.1 {
                 p

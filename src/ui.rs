@@ -17,15 +17,21 @@ pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(|mut cmd: Commands, asset_server: Res<AssetServer>| {
-            cmd.insert_resource(UiResources {
-                languages: vec![
-                    asset_server.load("locale/en-EN.locale"), // english dictionary
-                    asset_server.load("locale/es-ES.locale"), //spanish dictionary
-                ],
-            });
-        })
-        .add_systems((setup_ui, button_system, remove_screen.run_if(run_if_anim)));
+        app.add_systems(
+            Startup,
+            |mut cmd: Commands, asset_server: Res<AssetServer>| {
+                cmd.insert_resource(UiResources {
+                    languages: vec![
+                        asset_server.load("locale/en-EN.locale"), // english dictionary
+                        asset_server.load("locale/es-ES.locale"), //spanish dictionary
+                    ],
+                });
+            },
+        )
+        .add_systems(
+            Update,
+            (setup_ui, button_system, remove_screen.run_if(run_if_anim)),
+        );
     }
 }
 
@@ -59,8 +65,9 @@ fn setup_ui(
             flex_direction: FlexDirection::Column,
             align_items: AlignItems::Center,
             justify_content: JustifyContent::Center,
-            position: UiRect::all(Val::Percent(50.)),
-            gap: Size::height(Val::Px(10.)),
+            width: Val::Percent(100.),
+            height: Val::Percent(100.),
+            column_gap: Val::Px(10.),
             ..default()
         },
         ..default()
@@ -149,7 +156,10 @@ fn setup_ui(
             flex_direction: FlexDirection::Column,
             align_items: AlignItems::Center,
             justify_content: JustifyContent::FlexEnd,
-            size: Size::all(Val::Percent(100.)),
+            bottom: Val::Px(50.),
+            width: Val::Vw(100.),
+            // height: Val::Vw(100.),
+            // size: Size::all(Val::Percent(100.)),
             ..default()
         },
         ..default()
@@ -158,10 +168,6 @@ fn setup_ui(
     .with_children(|cmd| {
         cmd.spawn((
             TextBundle {
-                style: Style {
-                    position: UiRect::bottom(Val::Px(50.)),
-                    ..default()
-                },
                 text: Text::from_section(
                     lang.get_default("message2", "La paciencia es una gran virtud"),
                     TextStyle {
@@ -197,8 +203,10 @@ fn setup_ui(
             flex_direction: FlexDirection::Column,
             align_items: AlignItems::Center,
             justify_content: JustifyContent::Center,
-            position: UiRect::all(Val::Percent(50.)),
-            gap: Size::height(Val::Px(10.)),
+            left: Val::Vw(50.),
+            top: Val::Vh(50.),
+            right: Val::Vw(50.),
+            bottom: Val::Vh(50.),
             ..default()
         },
         ..default()
@@ -243,7 +251,7 @@ fn button_system(
     let mut window = window.single_mut();
     for (interaction, _children) in &mut interaction_query {
         match *interaction {
-            Interaction::Clicked => {
+            Interaction::Pressed => {
                 window.cursor.icon = CursorIcon::Hand;
                 url_callback.0(HOME_URL);
             }

@@ -19,7 +19,7 @@ pub(super) struct BugPathWalk {
     pub(super) speed: f32,
 }
 
-#[derive(Clone, Copy, Default, Reflect, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Reflect, PartialEq, Eq)]
 #[reflect]
 pub(super) enum BugState {
     #[default]
@@ -31,7 +31,7 @@ pub(super) enum BugState {
 //
 // Bug Data
 //
-#[derive(Component, Reflect)]
+#[derive(Component, Default, Reflect)]
 #[reflect]
 pub(super) struct BugData {
     pub(super) clicks: u8,

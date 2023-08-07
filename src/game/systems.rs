@@ -44,15 +44,6 @@ pub(super) fn factory_bugs(
         RaycastPickTarget::default(),
         On::<Pointer<Down>>::send_event::<BugEntityClickedEvent>(),
         BugData::factory(score.0, animations),
-        AudioBundle {
-            source: spawn_data.click_audio.clone(),
-            settings: PlaybackSettings {
-                mode: bevy::audio::PlaybackMode::Once,
-                volume: bevy::audio::Volume::Relative(VolumeLevel::new(0.5)),
-                speed: 1.,
-                paused: true,
-            },
-        },
         BugPathWalk {
             points,
             current_path: 0,
@@ -140,14 +131,15 @@ pub(super) fn animate_bugs(
 pub(super) fn kill_detect(
     mut cmd: Commands,
     time: Res<Time>,
-    mut bugs: Query<(Entity, &Transform, &AudioSink, &mut BugData), With<BugPathWalk>>,
+    spawn_data: Res<BugsSpawnTimer>,
+    mut bugs: Query<(Entity, &Transform, &mut BugData), With<BugPathWalk>>,
     mut score: ResMut<ScoreTextResource>,
     mut click_event: EventReader<BugEntityClickedEvent>,
     mut effect: EventWriter<EffectTypeEvent>,
 ) {
     let clicks = click_event.iter().collect::<Vec<&BugEntityClickedEvent>>();
 
-    for (entity, bug_transform, audio, mut data) in bugs.iter_mut() {
+    for (entity, bug_transform, mut data) in bugs.iter_mut() {
         // if bug is killed
         if data.is_dead() {
             let mut entity = cmd.entity(entity);
@@ -175,7 +167,14 @@ pub(super) fn kill_detect(
                 continue;
             }
             data.clicks += 1;
-            audio.play();
+            cmd.spawn((
+                Name::new(format!("audio_fx_{}", entity.index())),
+                AudioBundle {
+                    source: spawn_data.click_audio.clone(),
+                    settings: PlaybackSettings::DESPAWN
+                        .with_volume(bevy::audio::Volume::Relative(VolumeLevel::new(0.5))),
+                },
+            ));
             // Spawn particles
             let pos = if let Some(p) = e.1 {
                 p

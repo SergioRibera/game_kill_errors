@@ -27,10 +27,12 @@ pub(crate) struct Game;
 
 impl Plugin for Game {
     fn build(&self, app: &mut App) {
-        app.insert_resource(ScoreTextResource(0))
-            .register_type::<BugPathWalk>()
+        app.register_type::<BugPathWalk>()
             .register_type::<BugData>()
-            .add_event::<BugEntityClickedEvent>()
+            .add_event::<BugEntityClickedEvent>();
+        #[cfg(feature = "inspect")]
+        app.register_type::<ScoreTextResource>();
+        app.insert_resource(ScoreTextResource(0))
             .add_systems(
                 Startup,
                 (
@@ -61,15 +63,17 @@ impl Plugin for Game {
                     },
                 ),
             )
+            .add_systems(Update, start_game)
             .add_systems(
                 Update,
                 (
-                    factory_bugs.run_if(in_state(GameState::Game)),
+                    factory_bugs,
+                    score_print,
                     animate_bugs,
                     movement_bugs,
                     kill_detect,
-                    score_print,
-                ),
+                )
+                    .run_if(in_state(GameState::Game)),
             );
     }
 }
@@ -78,6 +82,7 @@ impl Plugin for Game {
 // Score Data Management
 //
 #[derive(Resource)]
+#[cfg_attr(feature = "inspect", derive(Reflect))]
 pub(crate) struct ScoreTextResource(pub u64);
 
 #[derive(Resource)]

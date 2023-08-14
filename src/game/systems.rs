@@ -167,14 +167,14 @@ pub(super) fn kill_detect(
                 continue;
             }
             data.clicks += 1;
-            cmd.spawn((
-                Name::new(format!("audio_fx_{}", entity.index())),
+            cmd.spawn(
+                // Name::new(format!("audio_fx_{}", entity.index())),
                 AudioBundle {
                     source: spawn_data.click_audio.clone(),
                     settings: PlaybackSettings::DESPAWN
                         .with_volume(bevy::audio::Volume::Relative(VolumeLevel::new(0.5))),
                 },
-            ));
+            );
             // Spawn particles
             let pos = if let Some(p) = e.1 {
                 p
@@ -191,8 +191,6 @@ pub(super) fn kill_detect(
 //
 pub(super) fn score_print(
     mut text: Query<&mut Text, With<ScoreText>>,
-    mut anim_reader: EventReader<TweenCompleted>,
-    mut game_state: ResMut<NextState<GameState>>,
     score: Res<ScoreTextResource>,
 ) {
     if text.is_empty() {
@@ -200,7 +198,12 @@ pub(super) fn score_print(
     }
     let mut text = text.single_mut();
     text.sections[0].value = score.0.to_string();
+}
 
+pub(super) fn start_game(
+    mut anim_reader: EventReader<TweenCompleted>,
+    mut game_state: ResMut<NextState<GameState>>,
+) {
     for e in anim_reader.iter() {
         if e.user_data == 2 {
             game_state.set(GameState::Game);

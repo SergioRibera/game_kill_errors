@@ -39,6 +39,9 @@ bevy = { version = "0.11", default-features = false, features = [
 
 [features]
 default = []
+inspect = ["bevy-inspector-egui"]
+
+[target.'cfg(not(target_family = "wasm"))'.features]
 inspect = ["bevy/dynamic_linking", "bevy-inspector-egui"]
 
 [dependencies]

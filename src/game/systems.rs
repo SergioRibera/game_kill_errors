@@ -170,13 +170,11 @@ pub(super) fn kill_detect(
                 continue;
             }
             data.clicks += 1;
-            cmd.spawn(
-                AudioBundle {
-                    source: spawn_data.click_audio.clone(),
-                    settings: PlaybackSettings::DESPAWN
-                        .with_volume(bevy::audio::Volume::Relative(VolumeLevel::new(0.5))),
-                },
-            );
+            cmd.spawn(AudioBundle {
+                source: spawn_data.click_audio.clone(),
+                settings: PlaybackSettings::DESPAWN
+                    .with_volume(bevy::audio::Volume::Relative(VolumeLevel::new(0.5))),
+            });
             // Spawn Score Bounce animation
             {
                 let mut score_entity = cmd.entity(score_entity);

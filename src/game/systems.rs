@@ -3,9 +3,10 @@ use std::time::Duration;
 use bevy::audio::VolumeLevel;
 use bevy::prelude::*;
 use bevy_mod_picking::prelude::*;
-use bevy_tweening::TweenCompleted;
+use bevy_tweening::{Animator, EaseFunction, Tween, TweenCompleted};
 use rand::{thread_rng, Rng};
 
+use crate::lens::GameTextSizeLens;
 use crate::{
     effects::EffectTypeEvent, ext::Vec3ExtMut, helper::generate_points, GameState,
     MAX_BUGS_ON_SCREEN,
@@ -132,12 +133,14 @@ pub(super) fn kill_detect(
     mut cmd: Commands,
     time: Res<Time>,
     spawn_data: Res<BugsSpawnTimer>,
+    text: Query<Entity, With<ScoreText>>,
     mut bugs: Query<(Entity, &Transform, &mut BugData), With<BugPathWalk>>,
     mut score: ResMut<ScoreTextResource>,
     mut click_event: EventReader<BugEntityClickedEvent>,
     mut effect: EventWriter<EffectTypeEvent>,
 ) {
     let clicks = click_event.iter().collect::<Vec<&BugEntityClickedEvent>>();
+    let score_entity = text.single();
 
     for (entity, bug_transform, mut data) in bugs.iter_mut() {
         // if bug is killed
@@ -168,13 +171,23 @@ pub(super) fn kill_detect(
             }
             data.clicks += 1;
             cmd.spawn(
-                // Name::new(format!("audio_fx_{}", entity.index())),
                 AudioBundle {
                     source: spawn_data.click_audio.clone(),
                     settings: PlaybackSettings::DESPAWN
                         .with_volume(bevy::audio::Volume::Relative(VolumeLevel::new(0.5))),
                 },
             );
+            // Spawn Score Bounce animation
+            {
+                let mut score_entity = cmd.entity(score_entity);
+                let tween = Tween::new(
+                    EaseFunction::BounceOut,
+                    Duration::from_secs_f32(0.6),
+                    GameTextSizeLens::create(128., 165.),
+                );
+                score_entity.remove::<Animator<Text>>();
+                score_entity.insert(Animator::new(tween));
+            }
             // Spawn particles
             let pos = if let Some(p) = e.1 {
                 p

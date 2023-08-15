@@ -30,3 +30,28 @@ impl Lens<Text> for GameTextColorLens {
             .for_each(|section| section.style.color = value.into());
     }
 }
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct GameTextSizeLens {
+    /// Start color.
+    pub start: f32,
+    /// End color.
+    pub end: f32,
+}
+
+impl GameTextSizeLens {
+    pub fn create(start: f32, end: f32) -> Self {
+        Self { start, end }
+    }
+}
+
+impl Lens<Text> for GameTextSizeLens {
+    fn lerp(&mut self, target: &mut Text, ratio: f32) {
+        let (a, b) = (self.start, self.end);
+        let value = a + (b - a) * ratio;
+        target
+            .sections
+            .iter_mut()
+            .for_each(|section| section.style.font_size = value);
+    }
+}

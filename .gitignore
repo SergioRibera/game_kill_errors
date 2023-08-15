@@ -3,6 +3,6 @@ launchers/mobile/android/gradle
 launchers/mobile/android/build
 launchers/mobile/android/.gradle
 ***/*.jks
-***/dist
+***/dist/
 ***/target
 ***/Cargo.lock

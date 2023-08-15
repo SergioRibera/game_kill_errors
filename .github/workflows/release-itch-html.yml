@@ -43,11 +43,13 @@ jobs:
           name: ${{env.APP_NAME}}
         run: |
           cd launchers/wasm
-          trunk build --release --public-url /${name//_/-}/
+          trunk build --release --public-url /$PUBLIC_URL/
 
       - name: Setup | Place dist
         run: |
           cd ./launchers/wasm/dist
+          sed -i 's/\/main-/\.\/main-/g' index.html
+          sed -i 's/\/wasm_/\.\/wasm_/g' index.html
           find . -type f -exec zip ../../../${{env.APP_NAME}}-wasm32-unknown-unknown.zip {} \;
 
       - name: Post Build | Upload Artifact

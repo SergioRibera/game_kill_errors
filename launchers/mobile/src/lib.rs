@@ -1,9 +1,56 @@
-use bevy::prelude::*;
+use game::LocaleLangs;
+use jni::objects::JObject;
+use jni::*;
 
-fn open_url(_url: &str) {}
+fn open_url(url: &str) {
+    let ctx = ndk_context::android_context();
+    let vm = unsafe { JavaVM::from_raw(ctx.vm().cast()) }.unwrap();
+    let context = unsafe { JObject::from_raw(ctx.context().cast()) };
+    let mut env = vm.attach_current_thread().unwrap();
 
-#[bevy_main]
-fn main() {
+    let url = env.new_string(url).unwrap();
+
+    env.call_method(
+        context,
+        "openUrl",
+        "(Ljava/lang/String;)V",
+        &[(&url).into()],
+    )
+    .unwrap();
+}
+
+fn get_lang() -> game::LocaleLangs {
+    let ctx = ndk_context::android_context();
+    let vm = unsafe { JavaVM::from_raw(ctx.vm().cast()) }.unwrap();
+    let mut env = vm.attach_current_thread().unwrap();
+
+    let lang = env.find_class("java/util/Locale").unwrap();
+    let lang = env
+        .call_static_method(lang, "getDefault", "()Ljava/util/Locale;", &[])
+        .unwrap();
+    let lang = env
+        .call_method(
+            lang.l().unwrap(),
+            "getLanguage",
+            "()Ljava/lang/String;",
+            &[],
+        )
+        .unwrap();
+    let lang = lang.l().unwrap();
+    let lang = env.get_string((&lang).into()).unwrap();
+    let lang = lang.to_str().unwrap();
+    let lang = lang.to_lowercase();
+
+    match lang.as_str() {
+        "es" => LocaleLangs::ES,
+        _ => LocaleLangs::EN,
+    }
+}
+
+#[no_mangle]
+fn android_main(android_app: bevy::winit::AndroidApp) {
+    let _ = bevy::winit::ANDROID_APP.set(android_app);
+
     println!("Starting launcher: Mobile");
-    game::app(true, game::LocaleLangs::EN, open_url).run();
+    game::app(true, get_lang(), open_url).run();
 }

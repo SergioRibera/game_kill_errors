@@ -63,15 +63,15 @@ impl Plugin for Game {
                     },
                 ),
             )
-            .add_systems(Update, start_game)
+            .add_systems(Update, start_game.run_if(not(in_state(GameState::Game))))
             .add_systems(
                 Update,
                 (
                     factory_bugs,
-                    score_print,
-                    animate_bugs,
-                    movement_bugs,
+                    movement_bugs.after(factory_bugs),
+                    animate_bugs.after(factory_bugs),
                     kill_detect,
+                    score_print,
                 )
                     .run_if(in_state(GameState::Game)),
             );

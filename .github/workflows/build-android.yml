@@ -5,7 +5,6 @@ permissions:
 
 env:
   APP_NAME: kill_errors
-  UPLOAD_PLAY_STORE: false
 
 on:
   workflow_dispatch:

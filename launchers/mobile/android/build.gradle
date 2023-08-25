@@ -46,10 +46,14 @@ android {
             ignoreAssetsPattern "!.svn:!.git:!.gitignore:!.ds_store:!*.scc:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"
         }
 
+        def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
+        def versionMinor = versionProps['VERSION_MINOR'].toInteger()
+        def versionPatch = versionProps['VERSION_PATCH'].toInteger()
+
         // Feel free to modify the application id to your own.
         applicationId getExportPackageName()
-        versionCode getExportVersionCode()
-        versionName getExportVersionName()
+        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         minSdkVersion getExportMinSdkVersion()
         targetSdkVersion getExportTargetSdkVersion()
 
@@ -68,8 +72,6 @@ android {
             assets.srcDirs = ["../../../assets"]
             res.srcDirs = ["../../../res/android"]
         }
-        // debug.jniLibs.srcDirs = ["../libs/debug"]
-        // release.jniLibs.srcDirs = ["../libs/release"]
     }
 }
 
@@ -78,13 +80,21 @@ apply plugin: "org.mozilla.rust-android-gradle.rust-android"
 cargo {
     module  = "../"
     libname = "game"
-    targets = [
-        // "arm",
-        "arm64",
-        // "x86",
-        // "x86_64"
-    ]
     targetDirectory = "../../../target"
+    if (project.gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }) {
+        profile = "release"
+        targets = [
+            "arm",
+            "arm64",
+            "x86",
+            "x86_64"
+        ]
+    } else {
+        profile = "debug"
+        targets = [
+            "arm64",
+        ]
+    }
 }
 
 //

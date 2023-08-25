@@ -1,3 +1,4 @@
+use bevy::prelude::bevy_main;
 use game::LocaleLangs;
 use jni::objects::JObject;
 use jni::*;
@@ -47,10 +48,8 @@ fn get_lang() -> game::LocaleLangs {
     }
 }
 
-#[no_mangle]
-fn android_main(android_app: bevy::winit::AndroidApp) {
-    let _ = bevy::winit::ANDROID_APP.set(android_app);
-
+#[bevy_main]
+fn main() {
     println!("Starting launcher: Mobile");
     game::app(true, get_lang(), open_url).run();
 }

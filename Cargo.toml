@@ -20,7 +20,7 @@ opt-level = 'z'
 lto = true
 
 [workspace.dependencies]
-log = "0.4.19"
+log = "0.4.20"
 bevy = { version = "0.11", default-features = false, features = [
     "android_shared_stdcxx",
     "bevy_asset",
@@ -50,10 +50,9 @@ log.workspace = true
 rand = "0.8"
 lazy_static = "1.4.0"
 bevy_sprite3d = "2.5.0"
-bevy_eventlistener = { git = "https://github.com/aevyrie/bevy_eventlistener.git", rev = "4d8de4c" }
+bevy_eventlistener = "0.3"
 bevy-inspector-egui = { version = "0.19", optional = true }
-# TODO: update to 0.15 when update to bevy 0.11
-bevy_mod_picking = { version = "0.14.0", default-features = false, features = [
+bevy_mod_picking = { version = "0.15.0", default-features = false, features = [
     "selection",
     "backend_raycast",
 ] }
@@ -63,4 +62,3 @@ bevy_tweening = { version = "0.8.0", default-features = false, features = [
 
 [patch.crates-io]
 bevy_tweening = { git = "https://github.com/SergioRibera/bevy_tweening", branch = "infinite_mirrored" }
-bevy_mod_picking = { git = "https://github.com/bardt/bevy_mod_picking", branch = "bevy_0.11" }
